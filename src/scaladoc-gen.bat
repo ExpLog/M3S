@@ -1,1 +1,1 @@
-scaladoc -diagrams -doc-title M3S -feature MarkovChain.scala
+scaladoc -diagrams -doc-title M3S -feature MarkovChain.scala Machine.scala Simulation.scala

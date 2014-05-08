@@ -3,18 +3,33 @@
  */
 
 package m3s
-import Machine._
+import MarkovChain._
 
 /**
- * Simules a machine that is represented by a tree where the internal nodes are [[m3s.ComplexMachine]] and
+ * Simulates a machine that is represented by a tree where the internal nodes are [[m3s.ComplexMachine]] and
  * the leaf nodes are [[m3s.SimpleMachine]].
  */
 abstract class Machine {
+  /**
+   * Simulates the [[m3s.Machine]] for 1 time step.
+   * @return
+   */
   def step: Machine
 
+  /**
+   * The structure function of the machine. Defines how the current state of the machine is obtained.
+   * In the case of a [[m3s.ComplexMachine]], it is a function defined on its children.
+   * In the case of a [[m3s.SimpleMachine]], it is usually the identity function on the state of its [[m3s.MarkovChain]]
+   * @return
+   */
   def structure: State
 
-  def performance(s: Int): Double
+  /**
+   * Gives the nominal performance corresponding to the current [[m3s.MarkovChain.State]] of the [[m3s.Machine]].
+   * Needs to be overrided by the user.
+   * @return Nominal performance of this [[m3s.Machine]]
+   */
+  def performance(): Double = structure
 }
 
 
@@ -24,12 +39,10 @@ abstract class Machine {
  * @param m A [[m3s.MarkovChain]]
  * @param state The current state.
  */
-abstract case class SimpleMachine(m: MarkovChain, state: State) extends Machine {
+case class SimpleMachine(m: MarkovChain, state: State) extends Machine {
   override def step: Machine = SimpleMachine(m, m.transition(state))
 
   override def structure: State = state
-
-  def performance(s: Int): Double
 }
 
 /**
@@ -37,22 +50,13 @@ abstract case class SimpleMachine(m: MarkovChain, state: State) extends Machine 
  * a structure function that determines how the outputs of the children machinery come together to form the
  * more complex machine.
  * @param ms A sequence of [[m3s.Machine]].
- * @param f A function that takes a sequence of [[m3s.Machine]] and outputs a [[m3s.Machine.State]].
+ * @param f A function that takes a sequence of [[m3s.Machine]] and outputs a [[m3s.MarkovChain.State]].
  */
-abstract case class ComplexMachine(ms: Machine*)(f: Seq[Machine] => State) extends Machine {
+case class ComplexMachine(ms: Machine*)(f: Seq[Machine] => State) extends Machine {
   override def step: Machine = {
-    val ms2 = for( m <- ms ) yield m.step
-    ComplexMachine(ms2)(f)
+    val ms2: Seq[Machine] = for( m <- ms ) yield m.step
+    ComplexMachine(ms2:_*)(f)
   }
 
   override def structure = f(ms)
-
-  def performance(s: Int): Double
-}
-
-object Machine{
-  /**
-   * A [[m3s.Machine.State]] is an Int that represents the current state of a [[m3s.Machine]]
-   */
-  type State = Int
 }
