@@ -26,7 +26,7 @@ class MarkovChain(transProb: Vector[Vector[Double]]) {
 }
 
 /**
- * Helpers for [[MarkovChain]].
+ * Helpers for [[m3s.MarkovChain]].
  */
 object MarkovChain {
   /**
@@ -36,22 +36,22 @@ object MarkovChain {
 
   /**
    * Row-normalize the input matrix.
-   * @param m A [[Matrix]]
-   * @return Row-normalized [[Matrix]]
+   * @param m A [[m3s.MarkovChain.Matrix]]
+   * @return Row-normalized [[m3s.MarkovChain.Matrix]]
    */
   def normalize(m: Matrix): Matrix = ???
 
   /**
-   * Converts a String representing a filename into the [[Matrix]] in the file.
+   * Converts a String representing a filename into the [[m3s.MarkovChain.Matrix]]  in the file.
    * @param s Filename.
-   * @return [[Matrix]] in the file
+   * @return [[m3s.MarkovChain.Matrix]]  in the file
    */
   implicit def fileToMatrix(s: String): Matrix = ???
 
   /**
-   * Factory method for [[MarkovChain]]
-   * @param m A square [[Matrix]]
-   * @return A [[MarkovChain]] defined by m
+   * Factory method for [[m3s.MarkovChain]]
+   * @param m A square [[m3s.MarkovChain.Matrix]]
+   * @return A [[m3s.MarkovChain]] defined by m
    */
   def apply(m: Matrix): MarkovChain = ???
 }
