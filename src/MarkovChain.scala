@@ -8,7 +8,7 @@ import scala.language.implicitConversions
 
 /**
  * A Markov Chain represented by a transition matrix.
- * @param transProb Square [[MarkovChain.Matrix]] with all non-negative values. Its rows will be normalized.
+ * @param transProb Square [[Matrix]] with all non-negative values. Its rows will be normalized.
  */
 class MarkovChain(transProb: Vector[Vector[Double]]) {
   require(transProb.length*transProb.length == transProb.foldLeft(0){(n,v) => n+v.length},
@@ -16,20 +16,20 @@ class MarkovChain(transProb: Vector[Vector[Double]]) {
   require(transProb.forall(x => x.forall( y => y >= 0 )), "MarkovChain: negative value in matrix.")
 
   /**
-   * Row-normalized transition [[MarkovChain.Matrix]].
+   * Row-normalized transition [[Matrix]].
    */
   private val m: Matrix = rowNorm(transProb)
 
   /**
-   * Total number of [[MarkovChain.State]]. Note that since the first state is 0,
+   * Total number of [[State]]. Note that since the first state is 0,
    * that the state `s = nStates` is not a valid state.
    */
   val nStates: Int = m.length
 
   /**
-   * Computes the next [[MarkovChain.State]].
-   * @param s Current [[MarkovChain.State]] of the chain.
-   * @return Next [[MarkovChain.State]] of the chain.
+   * Computes the next [[State]].
+   * @param s Current [[State]] of the chain.
+   * @return Next [[State]] of the chain.
    */
   def transition(s: State): State = ???
 
@@ -43,27 +43,28 @@ class MarkovChain(transProb: Vector[Vector[Double]]) {
  * Helper functions and types for [[MarkovChain]].
  */
 object MarkovChain {
-  /**
-   * Defines a matrix as a vector of vector of doubles.
-   */
-  type Matrix = Vector[Vector[Double]]
 
-  /**
-   * A state is an Int that represents the current state of a [[MarkovChain]]
-   */
-  type State = Int
 
   /**
    * Row-normalizes the input matrix.
-   * @param m A [[MarkovChain.Matrix]]
-   * @return Row-normalized [[MarkovChain.Matrix]]
+   * @param m A [[Matrix]]
+   * @return Row-normalized [[Matrix]]
    */
   def rowNorm(m: Matrix): Matrix = ???
 
   /**
-   * Implicitly converts a filename into the [[MarkovChain.Matrix]] in the file.
+   * Implicitly converts a filename into the [[Matrix]] in the file.
+   *
+   * The file must contain only the matrix in plain text.
+   * Each line in the file is a matrix row with spaces between the numbers.
+   *
+   * For example, this is a 2x2 valid matrix file:
+   * {{{
+   *   0.2 0.8
+   *   0.3 0.4
+   * }}}
    * @param s Filename.
-   * @return [[MarkovChain.Matrix]]  in the file
+   * @return The matrix in the file
    */
   implicit def fileToMatrix(s: String): Matrix = {
     val lines: Iterator[String] = scala.io.Source.fromFile(s).getLines()
@@ -72,9 +73,9 @@ object MarkovChain {
   }
 
   /**
-   * Factory method for [[MarkovChain]]
-   * @param m A square [[MarkovChain.Matrix]]
-   * @return A [[MarkovChain]] defined by m
+   * Factory method for [[MarkovChain]].
+   * @param m A square [[Matrix]]
+   * @return A Markov Chain defined by m
    */
   def apply(m: Matrix): MarkovChain = new MarkovChain(m)
 }

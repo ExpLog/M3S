@@ -21,9 +21,9 @@ object Simulation {
 
   /**
    * Simulates [[Machine]] `m` while the expression `f(m)` is true.
-   * @param m [[Machine]] to be simulated
-   * @param f A function that takes a Sequence of [[Machine]] and outputs to a Boolean
-   * @return A pair consisting of a [[Machine]] and an Int, representing the first failure state and the number of steps until failure
+   * @param m Machine to be simulated
+   * @param f Function that takes a sequence of machines and outputs to a Boolean
+   * @return Pair consisting of the final machine and an Int, representing the first failure state and the number of steps until failure
    */
   def runWhile(m: Machine, t: Int = 0)(f: Machine => Boolean): (Machine,Int) = f(m) match {
     case true => runWhile(m.step, t+1)(f)

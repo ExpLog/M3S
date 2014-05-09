@@ -45,7 +45,7 @@ case class SimpleMachine(private val m: MarkovChain, private val state: State) e
  * a [[Machine.structure]] function that determines how the outputs of the children machinery come together to form the
  * more complex machine.
  * @param ms A sequence of [[Machine]].
- * @param f A function that takes a sequence of [[Machine]] and outputs a [[MarkovChain.State]].
+ * @param f A function that takes a sequence of [[Machine]] and outputs a [[State]].
  */
 case class ComplexMachine(ms: Machine*)(f: Seq[Machine] => State) extends Machine {
   require(ms.length > 0, "ComplexMachine: empty list of children machinery")
