@@ -3,7 +3,7 @@
  */
 
 /**
- * Contains types used in the [[m3s]] package.
+ * Framework for simulating stochastic machines.
  */
 package object m3s {
   /**

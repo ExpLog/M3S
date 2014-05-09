@@ -53,7 +53,7 @@ object MarkovChain {
   def rowNorm(m: Matrix): Matrix = ???
 
   /**
-   * Implicitly converts a filename into the [[Matrix]] in the file.
+   * Implicitly converts a file containing a matrix into that [[Matrix]].
    *
    * The file must contain only the matrix in plain text.
    * Each line in the file is a matrix row with spaces between the numbers.
@@ -63,7 +63,7 @@ object MarkovChain {
    *   0.2 0.8
    *   0.3 0.4
    * }}}
-   * @param s Filename.
+   * @param s The file path
    * @return The matrix in the file
    */
   implicit def fileToMatrix(s: String): Matrix = {
@@ -75,7 +75,7 @@ object MarkovChain {
   /**
    * Factory method for [[MarkovChain]].
    * @param m A square [[Matrix]]
-   * @return A Markov Chain defined by m
+   * @return A Markov Chain defined by `m`
    */
   def apply(m: Matrix): MarkovChain = new MarkovChain(m)
 }

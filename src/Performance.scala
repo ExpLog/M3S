@@ -6,7 +6,7 @@ package m3s
 
 /**
  * Trait meant to be mixed in with a [[Machine]] where the relevant information
- * is a nominal performance, determined by the machine's current [[State]]
+ * is a nominal performance, determined by the machine's current [[State]].
  */
 trait Performance extends Machine {
   /**

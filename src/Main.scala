@@ -16,6 +16,9 @@ object Main {
     val matrix = fileToMatrix("C:\\Users\\DomHellsing\\Desktop\\chain.txt")
     println(matrix)
 
-    val m = new SimpleMachine with Performance
+    val m = new SimpleMachine(MarkovChain(matrix), 1) with Performance{ def sPerf(s: State) = 1.1*s }
+
+    val s = Seq.fill(5)(m)
+    s.map(x => x.structure).min
   }
 }
