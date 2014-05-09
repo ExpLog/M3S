@@ -4,23 +4,32 @@
 package m3s
 
 import MarkovChain._
+import scala.language.implicitConversions
 
 /**
- * A Markov Chain represented by a matrix.
- * @param transProb Must be square with all non-negative values. Its rows will be normalized.
+ * A Markov Chain represented by a transition matrix.
+ * @param transProb Square [[MarkovChain.Matrix]] with all non-negative values. Its rows will be normalized.
  */
 class MarkovChain(transProb: Vector[Vector[Double]]) {
-  require(transProb.length*transProb.length == transProb.foldLeft(0){(n,v) => n+v.length})  //matrix is square
+  require(transProb.length*transProb.length == transProb.foldLeft(0){(n,v) => n+v.length},
+    "MarkovChain: matrix isn't square")
+  require(transProb.forall(x => x.forall( y => y >= 0 )), "MarkovChain: negative value in matrix.")
 
   /**
-   * Row-normalized transition matrix.
+   * Row-normalized transition [[MarkovChain.Matrix]].
    */
-  private val m : Matrix = normalize(transProb)
+  private val m: Matrix = rowNorm(transProb)
 
   /**
-   * Computes the next state.
-   * @param s Current state of the chain.
-   * @return Next state of the chain.
+   * Total number of [[MarkovChain.State]]. Note that since the first state is 0,
+   * that the state `s = nStates` is not a valid state.
+   */
+  val nStates: Int = m.length
+
+  /**
+   * Computes the next [[MarkovChain.State]].
+   * @param s Current [[MarkovChain.State]] of the chain.
+   * @return Next [[MarkovChain.State]] of the chain.
    */
   def transition(s: State): State = ???
 
@@ -31,41 +40,41 @@ class MarkovChain(transProb: Vector[Vector[Double]]) {
 }
 
 /**
- * Helpers for [[m3s.MarkovChain]].
+ * Helper functions and types for [[MarkovChain]].
  */
 object MarkovChain {
   /**
-   * Defines a Matrix as a Vector of Double Vectors.
+   * Defines a matrix as a vector of vector of doubles.
    */
   type Matrix = Vector[Vector[Double]]
 
   /**
-   * A [[m3s.MarkovChain.State]] is an Int that represents the current state of a [[m3s.MarkovChain]]
+   * A state is an Int that represents the current state of a [[MarkovChain]]
    */
   type State = Int
 
   /**
-   * Row-normalize the input matrix.
-   * @param m A [[m3s.MarkovChain.Matrix]]
-   * @return Row-normalized [[m3s.MarkovChain.Matrix]]
+   * Row-normalizes the input matrix.
+   * @param m A [[MarkovChain.Matrix]]
+   * @return Row-normalized [[MarkovChain.Matrix]]
    */
-  def normalize(m: Matrix): Matrix = ???
+  def rowNorm(m: Matrix): Matrix = ???
 
   /**
-   * Converts a String representing a filename into the [[m3s.MarkovChain.Matrix]]  in the file.
+   * Implicitly converts a filename into the [[MarkovChain.Matrix]] in the file.
    * @param s Filename.
-   * @return [[m3s.MarkovChain.Matrix]]  in the file
+   * @return [[MarkovChain.Matrix]]  in the file
    */
-  implicit def stringToMatrix(s: String): Matrix = {
+  implicit def fileToMatrix(s: String): Matrix = {
     val lines: Iterator[String] = scala.io.Source.fromFile(s).getLines()
     val m: Matrix = (for( l <- lines ) yield l.split(" ").map(x => x.toDouble).toVector).toVector
     m
   }
 
   /**
-   * Factory method for [[m3s.MarkovChain]]
-   * @param m A square [[m3s.MarkovChain.Matrix]]
-   * @return A [[m3s.MarkovChain]] defined by m
+   * Factory method for [[MarkovChain]]
+   * @param m A square [[MarkovChain.Matrix]]
+   * @return A [[MarkovChain]] defined by m
    */
   def apply(m: Matrix): MarkovChain = new MarkovChain(m)
 }

@@ -13,7 +13,9 @@ object Main {
   def main(args: Array[String]){
     println("just creating the git")
 
-    val matrix = stringToMatrix("C:\\Users\\DomHellsing\\Desktop\\chain.txt")
+    val matrix = fileToMatrix("C:\\Users\\DomHellsing\\Desktop\\chain.txt")
     println(matrix)
+
+    val m = new SimpleMachine with Performance
   }
 }
