@@ -4,13 +4,14 @@
 package m3s
 
 import MarkovChain._
+import scala.util.Random
 import scala.language.implicitConversions
 
 /**
  * A Markov Chain represented by a transition matrix.
  * @param transProb Square [[Matrix]] with all non-negative values. Its rows will be normalized.
  */
-class MarkovChain(transProb: Vector[Vector[Double]]) {
+class MarkovChain(transProb: Matrix)(implicit seed: Long = System.currentTimeMillis) {
   require(transProb.length*transProb.length == transProb.foldLeft(0){(n,v) => n+v.length},
     "MarkovChain: matrix isn't square")
   require(transProb.forall(x => x.forall( y => y >= 0 )), "MarkovChain: negative value in matrix.")
@@ -27,11 +28,19 @@ class MarkovChain(transProb: Vector[Vector[Double]]) {
   val nStates: Int = m.length
 
   /**
-   * Computes the next [[State]].
-   * @param s Current [[State]] of the chain.
-   * @return Next [[State]] of the chain.
+   * Random number generator used to calculate transitions.
    */
-  def transition(s: State): State = ???
+  private val rand: Random = new Random(seed)
+
+  /**
+   * Computes the next state of the chain given the current state.
+   * @param s Current state of the chain
+   * @return Next state of the chain.
+   */
+  def transition(s: State): State = {
+    def aux(db: Double, acc: State): State = if(db < m(s)(acc)) acc else aux(db, acc+1)
+    aux(rand.nextDouble(), 0)
+  }
 
   override def toString: String = {
     val lines: Vector[String] = transProb.map(x => x.mkString(" "))
@@ -46,11 +55,16 @@ object MarkovChain {
 
 
   /**
-   * Row-normalizes the input matrix.
-   * @param m A [[Matrix]]
-   * @return Row-normalized [[Matrix]]
+   * Row-normalizes the input [[Matrix]].
+   * @param m A matrix
+   * @return Row-normalized matrix
    */
-  def rowNorm(m: Matrix): Matrix = ???
+  def rowNorm(m: Matrix): Matrix =
+    for( l <- m ) yield {
+      val norm = l.sum
+      l.map( x => x/norm)
+    }
+
 
   /**
    * Implicitly converts a file containing a matrix into that [[Matrix]].

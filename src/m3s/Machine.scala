@@ -3,7 +3,6 @@
  */
 
 package m3s
-import MarkovChain._
 
 /**
  * Simulates a machine that is represented by a tree where the internal nodes are [[ComplexMachine]] and
