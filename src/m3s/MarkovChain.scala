@@ -34,12 +34,15 @@ class MarkovChain(transProb: Matrix)(implicit seed: Long = System.currentTimeMil
 
   /**
    * Computes the next state of the chain given the current state.
-   * @param s Current state of the chain
+   * @param i Current state of the chain
    * @return Next state of the chain.
    */
-  def transition(s: State): State = {
-    def aux(db: Double, acc: State): State = if(db < m(s)(acc)) acc else aux(db, acc+1)
-    aux(rand.nextDouble(), 0)
+  def transition(i: State): State = {
+    def aux(db: Double, acc: Double, j: State): State = {
+      val prob = m(i)(j)
+      if(db < acc + prob) j else aux(db, acc + prob, j+1)
+    }
+    aux(rand.nextDouble(), 0.0, 0)
   }
 
   override def toString: String = {
