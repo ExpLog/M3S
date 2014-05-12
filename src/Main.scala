@@ -2,8 +2,9 @@
  * Created by Leonardo Fontoura on 06/05/2014.
  */
 
+import m3s.{Performance, SimpleMachine, MarkovChain}
 import m3s._
-import m3s.MarkovChain._
+import MarkovChain._
 
 object Main {
   /**
