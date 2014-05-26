@@ -1,7 +1,7 @@
 /**
  * Created by Leonardo Fontoura on 06/05/2014.
  */
-package m3s
+package scala.main.m3s
 
 import MarkovChain._
 import scala.util.Random

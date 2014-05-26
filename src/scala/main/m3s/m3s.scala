@@ -5,6 +5,9 @@
 /**
  * Framework for simulating stochastic machines.
  */
+
+package scala.main
+
 package object m3s {
   /**
    * Defines a matrix as a vector of vector of doubles.

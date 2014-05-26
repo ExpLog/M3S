@@ -1,9 +1,10 @@
+package scala.main
+
 /**
  * Created by Leonardo Fontoura on 06/05/2014.
  */
 
-import m3s.{Performance, SimpleMachine, MarkovChain}
-import m3s._
+import scala.main.m3s._
 import MarkovChain._
 
 object Main {
