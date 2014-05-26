@@ -2,7 +2,7 @@
  * Created by Leonardo Fontoura on 08/05/14.
  */
 
-package scala.main.m3s
+package main.scala.m3s
 
 /**
  * Simulates a machine that is represented by a tree where the internal nodes are [[ComplexMachine]] and

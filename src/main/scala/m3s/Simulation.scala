@@ -2,7 +2,7 @@
  * Created by Guest on 08/05/14.
  */
 
-package scala.main.m3s
+package main.scala.m3s
 
 /**
  * Provides simulation functions for [[Machine]] systems.

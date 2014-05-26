@@ -6,7 +6,7 @@
  * Framework for simulating stochastic machines.
  */
 
-package scala.main
+package main.scala
 
 package object m3s {
   /**

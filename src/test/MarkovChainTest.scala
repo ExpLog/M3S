@@ -2,12 +2,11 @@
  * Created by Leonardo Fontoura on 12/05/2014.
  */
 
-package scala.test
+package test
 
 import org.scalatest.Matchers
 import org.scalatest.FunSpec
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalacheck.Gen
 
 /*
 Just a friendly reminder for the future:

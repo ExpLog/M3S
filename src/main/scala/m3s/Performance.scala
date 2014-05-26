@@ -2,7 +2,7 @@
  * Created by Leonardo Fontoura on 09/05/2014.
  */
 
-package scala.main.m3s
+package main.scala.m3s
 
 /**
  * Trait meant to be mixed in with a [[Machine]] where the relevant information

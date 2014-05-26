@@ -1,11 +1,11 @@
-package scala.main
+package main.scala
 
 /**
  * Created by Leonardo Fontoura on 06/05/2014.
  */
 
-import scala.main.m3s._
-import MarkovChain._
+import main.scala.m3s._
+import main.scala.m3s.MarkovChain._
 
 object Main {
   /**
