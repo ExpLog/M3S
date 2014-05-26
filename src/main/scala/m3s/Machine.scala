@@ -8,7 +8,7 @@ package main.scala.m3s
  * Simulates a machine that is represented by a tree where the internal nodes are [[ComplexMachine]] and
  * the leaf nodes are [[SimpleMachine]].
  */
-abstract class Machine {
+trait Machine {
   /**
    * Simulates the machine for 1 time step.
    * @return A machine in the next state
@@ -56,7 +56,7 @@ case class SimpleMachine(private val m: MarkovChain, private val state: State) e
  * @param ms A sequence of machines
  * @param f A function that takes a sequence of [[Machine]] and outputs a [[State]].
  */
-case class ComplexMachine(ms: Machine*)(f: Seq[Machine] => State) extends Machine {
+case class ComplexMachine(ms: Machine*)(val f: Seq[Machine] => State) extends Machine {
   require(ms.length > 0, "ComplexMachine: empty list of children machinery")
 
   override def step: Machine = {
@@ -65,4 +65,10 @@ case class ComplexMachine(ms: Machine*)(f: Seq[Machine] => State) extends Machin
   }
 
   override def structure = f(ms)
+}
+
+object ComplexMachine {
+  //TODO: fix this unapply
+  def unapply(m: ComplexMachine): Option[(Seq[Machine], Seq[Machine] => State)] =
+    Some((m.ms, m.f))
 }

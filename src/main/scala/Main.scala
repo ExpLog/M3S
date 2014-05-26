@@ -22,5 +22,9 @@ object Main {
 
     val s = Seq.fill(5)(m)
     s.map(x => x.structure).min
+    val parallel = new ComplexMachine(s:_*)(_.map{x => x.structure}.sum) with Performance{ def sPerf(s: State) = 1.1*s}
+    val parallel2 = parallel.step
+    println(parallel2.curPerf)
   }
 }
+
