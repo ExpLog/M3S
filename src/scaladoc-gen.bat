@@ -1,0 +1,1 @@
+scaladoc -diagrams -doc-title M3S -feature -sourcepath main

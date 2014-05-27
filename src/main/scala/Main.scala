@@ -6,6 +6,8 @@ package main.scala
 
 import main.scala.m3s._
 import main.scala.m3s.MarkovChain._
+import main.scala.m3s.Simulation
+import main.scala.m3s.machines._
 
 object Main {
   /**
@@ -18,13 +20,19 @@ object Main {
     val mk = MarkovChain("C:\\Users\\Leo\\IdeaProjects\\M3S\\src\\matrix.txt")
     println(mk)
 
-    val m = new SimpleMachine(mk, 1) with Performance{ def sPerf(s: State) = 1.1*s }
+    val m = new SimpleMachine(mk, 1)
 
     val s = Seq.fill(5)(m)
     s.map(x => x.structure).min
-    val parallel = new ComplexMachine(s:_*)(_.map{x => x.structure}.sum) with Performance{ def sPerf(s: State) = 1.1*s}
-    val parallel2 = parallel.step
-    println(parallel2.curPerf)
+    val parallel = new ComplexMachine(s:_*)(_.map{x => x.structure}.sum)
+
+    val sim = new Simulation(parallel)
+    val parAfterSim: ComplexMachine = sim.run(10)
+    println(parAfterSim.structure)
+
+    val perfPar = PerformanceMachine(parallel)(x => math.sqrt(2)*x)
+    val parSim = new Simulation(perfPar)
+    println(parSim.runWhile(x => x.curPerf > 3.0))
   }
 }
 

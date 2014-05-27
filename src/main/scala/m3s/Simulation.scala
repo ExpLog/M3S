@@ -4,29 +4,50 @@
 
 package main.scala.m3s
 
+import main.scala.m3s.machines.{SimpleMachine, PerformanceMachine, ComplexMachine, Machine}
+
 /**
- * Provides simulation functions for [[Machine]] systems.
+ * Needs to be extended to provide evidence that a class can be simulated.
+ * @tparam A Typeclass parameter
  */
-object Simulation {
+trait CanSim[A]{
+  def step: A
+}
+
+/**
+ * Provides functions to simulate an object, given that this object provides
+ * evidence that it can be simulated.
+ *
+ * TODO: add examples of how to use this
+ *
+ * @param obj
+ * @param evidence$1
+ * @tparam A
+ */
+class Simulation[A <% CanSim[A]](obj: A){
   /**
-   * Simulates [[Machine]] `m` for `t` steps.
+   * Simulates the object for `t` time steps
    * @param t Number of steps to run the simulation.
-   * @param m [[Machine]] to be simulated.
-   * @return A [[Machine]] after `t` steps
+   * @return The simulation's object after `t` steps
    */
-  def run(t: Int, m: Machine): Machine = t > 0 match {
-    case true => run(t-1, m.step)
-    case false => m
+  def run(t: Int): A ={
+    def aux(o: A, t: Int): A = t > 0 match {
+      case true => aux(o.step, t - 1)
+      case false => o
+    }
+    aux(obj, t)
   }
 
   /**
-   * Simulates [[Machine]] `m` while the expression `f(m)` is true.
-   * @param m Machine to be simulated
+   * Simulates the object while the expression `f(obj)` is true.
    * @param f Function that takes a sequence of machines and outputs to a Boolean
-   * @return Pair consisting of the final machine and an Int, representing the first failure state and the number of steps until failure
+   * @return Pair consisting of the final object and an Int, representing the first failure state and the number of steps until failure
    */
-  def runWhile(m: Machine, t: Int = 0)(f: Machine => Boolean): (Machine,Int) = f(m) match {
-    case true => runWhile(m.step, t+1)(f)
-    case false => (m,t)
+  def runWhile(f: A => Boolean): (A,Int) = {
+    def aux(o: A, t: Int): (A,Int) = f(o) match {
+      case true => aux(o.step, t+1)
+      case false => (o,t)
+    }
+    aux(obj, 0)
   }
 }

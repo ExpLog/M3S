@@ -11,7 +11,7 @@ import scala.language.implicitConversions
  * A Markov Chain represented by a transition matrix.
  * @param transProb Square [[Matrix]] with all non-negative values. Its rows will be normalized.
  */
-class MarkovChain(transProb: Matrix)(implicit seed: Long = System.currentTimeMillis) {
+class MarkovChain(transProb: Matrix) {
   require(transProb.length*transProb.length == transProb.foldLeft(0){(n,v) => n+v.length},
     "MarkovChain: matrix isn't square")
   require(transProb.forall(x => x.forall( y => y >= 0 )), "MarkovChain: negative value in matrix.")
@@ -26,11 +26,6 @@ class MarkovChain(transProb: Matrix)(implicit seed: Long = System.currentTimeMil
    * that the state `s = nStates` is not a valid state.
    */
   val nStates: Int = m.length
-
-  /**
-   * Random number generator used to calculate transitions.
-   */
-  private val rand: Random = new Random(seed)
 
   /**
    * Computes the next state of the chain given the current state.
@@ -95,4 +90,9 @@ object MarkovChain {
    * @return A Markov Chain defined by `m`
    */
   def apply(m: Matrix): MarkovChain = new MarkovChain(m)
+
+  /**
+   * Random number generator used to calculate transitions.
+   */
+  val rand: Random = new Random(System.currentTimeMillis)
 }
