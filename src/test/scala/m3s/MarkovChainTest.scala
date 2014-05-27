@@ -2,7 +2,7 @@
  * Created by Leonardo Fontoura on 12/05/2014.
  */
 
-package test
+package main.scala.m3s
 
 import org.scalatest.Matchers
 import org.scalatest.FunSpec
