@@ -17,6 +17,7 @@ object Main {
   def main(args: Array[String]){
     println("just creating the git")
 
+    println(fileToMatrix("C:\\Users\\Leo\\IdeaProjects\\M3S\\src\\matrix.txt"))
     val mk = MarkovChain("C:\\Users\\Leo\\IdeaProjects\\M3S\\src\\matrix.txt")
     println(mk)
 
@@ -33,6 +34,13 @@ object Main {
     val perfPar = PerformanceMachine(parallel)(x => math.sqrt(2)*x)
     val parSim = new Simulation(perfPar)
     println(parSim.runWhile(x => x.curPerf > 3.0))
+
+
+//    import scala.pickling._
+//    import scala.pickling.binary._
+//    val mkp = mk.pickle
+//    println(mkp)
+//    println(mkp.unpickle[MarkovChain])
   }
 }
 
