@@ -2,9 +2,7 @@
  * Created by Guest on 08/05/14.
  */
 
-package main.scala.m3s
-
-import main.scala.m3s.machines.{SimpleMachine, PerformanceMachine, ComplexMachine, Machine}
+package m3s
 
 /**
  * Needs to be extended to provide evidence that a class can be simulated.

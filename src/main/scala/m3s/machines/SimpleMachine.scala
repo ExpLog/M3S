@@ -1,7 +1,6 @@
-package main.scala.m3s.machines
+package m3s.machines
 
-import main.scala.m3s._
-
+import m3s._
 /**
  * A [[SimpleMachine]] is composed of a [[MarkovChain]] and a state.
  * The MarkovChains determines the probabilities of the simple machine changing states.

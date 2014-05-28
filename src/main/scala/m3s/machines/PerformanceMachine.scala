@@ -1,6 +1,6 @@
-package main.scala.m3s.machines
+package m3s.machines
 
-import main.scala.m3s._
+import m3s._
 
 /**
  * Class meant to represent a [[Machine]] where the relevant information

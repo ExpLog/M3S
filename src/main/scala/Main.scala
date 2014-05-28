@@ -4,10 +4,9 @@ package main.scala
  * Created by Leonardo Fontoura on 06/05/2014.
  */
 
-import main.scala.m3s._
-import main.scala.m3s.MarkovChain._
-import main.scala.m3s.Simulation
-import main.scala.m3s.machines._
+import m3s._
+import m3s.Simulation
+import m3s.machines._
 
 object Main {
   /**
@@ -17,7 +16,6 @@ object Main {
   def main(args: Array[String]){
     println("just creating the git")
 
-    println(fileToMatrix("C:\\Users\\Leo\\IdeaProjects\\M3S\\src\\matrix.txt"))
     val mk = MarkovChain("C:\\Users\\Leo\\IdeaProjects\\M3S\\src\\matrix.txt")
     println(mk)
 

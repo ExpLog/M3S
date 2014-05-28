@@ -2,9 +2,6 @@
  * Created by Leonardo Fontoura on 09/05/2014.
  */
 
-
-package main.scala
-
 import scala.language.implicitConversions
 
 /**

@@ -2,9 +2,9 @@
  * Created by Leonardo Fontoura on 26/05/2014.
  */
 
-package main.scala.m3s.machines
+package m3s.machines
 
-import main.scala.m3s._
+import m3s._
 
 /**
  * A [[ComplexMachine]] is composed of a mixture of other [[ComplexMachine]] and [[SimpleMachine]] plus
