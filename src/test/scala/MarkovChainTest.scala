@@ -5,16 +5,32 @@
 import org.scalatest.Matchers
 import org.scalatest.FunSpec
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalacheck.Gen
 
 /*
 Just a friendly reminder for the future:
 To use ScalaTest with Scala-2.11, we need to add both
 scala-combinators and scala-xml libs to the project
 
-TODO: http://www.scalatest.org/user_guide/property_based_testing
+http://www.scalatest.org/user_guide/property_based_testing
+http://www.scalatest.org/user_guide/generator_driven_property_checks
 */
 
 class MarkovChainTest extends FunSpec with Matchers with GeneratorDrivenPropertyChecks {
+  val g = for(n <- Gen.chooseNum(1,10,2,3,4,5,6,7,8,9,10)) yield n
+
+  describe("alpha numeric string"){
+    it("should print"){
+      forAll (Gen.alphaStr)((str) => println(str))
+    }
+  }
+
+  describe("Figuring out what specials is") {
+    it("should exclude all special numbers"){
+      forAll (g)((n) => n == 1)
+    }
+  }
+
   describe("We can use test data from Scala check") {
     it("runs the same but with different constructs") {
       forAll {
