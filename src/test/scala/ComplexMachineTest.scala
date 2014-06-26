@@ -1,15 +1,13 @@
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{Matchers, FlatSpec}
-import m3s._
 import m3s.CanSim
 import m3s.machines._
 import m3s.machines.ComplexMachine._
-import org.scalacheck.Prop
 import Generators._
 
 class ComplexMachineTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
   "A ComplexMachine" should "implicitly convert to a ComplexMachineCanSim" in {
-    Prop.forAll(complexMachine) {
+    forAll(complexMachine) {
       cm =>
         val cmcs: CanSim[ComplexMachine] = cm
         cmcs.isInstanceOf[CanSim[ComplexMachine]]
@@ -17,7 +15,7 @@ class ComplexMachineTest extends FlatSpec with Matchers with GeneratorDrivenProp
   }
 
   it should "still be a ComplexMachine after one time step" in {
-    Prop.forAll(complexMachine) {
+    forAll(complexMachine) {
       cm =>
         val cm2 = cm.step
         cm2.isInstanceOf[ComplexMachine]

@@ -1,7 +1,6 @@
 import m3s._
 import org.scalatest.{FlatSpec, Matchers}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalacheck.Prop
 import Generators._
 
 class RowNormMatrixTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
@@ -10,7 +9,7 @@ class RowNormMatrixTest extends FlatSpec with Matchers with GeneratorDrivenPrope
   }
 
   it should "be square" in {
-    Prop.forAll(rowNormMatrix){ mtx =>
+    forAll(rowNormMatrix){ mtx =>
       val row = mtx.length
       (for(col <- mtx.m) yield row == col.length) forall(_ == true)
     }
@@ -26,7 +25,7 @@ class RowNormMatrixTest extends FlatSpec with Matchers with GeneratorDrivenPrope
   }
 
   it should "not contain negative entries" in {
-    Prop.forAll(rowNormMatrix){ mtx =>
+    forAll(rowNormMatrix){ mtx =>
       mtx.m forall(row => row forall(v => v >= 0))
     }
   }

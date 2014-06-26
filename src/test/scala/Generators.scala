@@ -29,13 +29,13 @@ object Generators {
    * @param n Desired matrix dimension.
    * @return
    */
-  def squareMatrixOfN(n: Int): Gen[Matrix] = vectorOfN(n, vectorOfN(n, chooseNum[Double](0,100)))
+  def squareMatrixOfN(n: Int): Gen[Matrix] = vectorOfN(n, vectorOfN(n, choose[Double](0,10)))
 
   /**
-   * Generates a square matrix of random dimension between 1 and 150.
+   * Generates a square matrix of random dimension between 1 and 10.
    * @return
    */
-  def squareMatrix: Gen[Matrix] = for(i <- choose(1,150); mtx <- squareMatrixOfN(i)) yield mtx
+  def squareMatrix: Gen[Matrix] = for(i <- choose[Int](1,10); mtx <- squareMatrixOfN(i)) yield mtx
 
   /**
    * Generates a square row normalized matrix of dimension N.
@@ -55,7 +55,7 @@ object Generators {
   def markovChain = for(mtx <- rowNormMatrix) yield MarkovChain(mtx)
 
   def linearFunction: Gen[Int => Double] =
-    for(d <- chooseNum[Double](1,10)) yield {
+    for(d <- choose[Double](1,10)) yield {
       val f = {x: Int => x*d}
       f
     }
@@ -64,17 +64,19 @@ object Generators {
     Gen.lzy(oneOf(simpleMachine, complexMachine, performanceMachine))
 
   def simpleMachine: Gen[SimpleMachine] =
-    for(mc <- markovChain; i <- chooseNum[Int](0,mc.nStates, mc.nStates)) yield SimpleMachine(mc,i)
+    for(mc <- markovChain; i <- choose[Int](0,mc.nStates-1)) yield SimpleMachine(mc,i)
 
-  def complexMachine: Gen[ComplexMachine] =
+  def complexMachine: Gen[ComplexMachine] = Gen.lzy{
     for{
-      n <- choose(1,10)
+      n <- choose(1,2)
       lm <- listOfN(n, machine)
     } yield ComplexMachine(lm:_*)(sum)
+  }
 
-  def performanceMachine: Gen[PerformanceMachine] =
+  def performanceMachine: Gen[PerformanceMachine] = Gen.lzy{
     for{
       m <- machine
       lf <- linearFunction
     } yield PerformanceMachine(m)(lf)
+  }
 }
