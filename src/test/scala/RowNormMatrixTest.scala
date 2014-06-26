@@ -21,6 +21,8 @@ class RowNormMatrixTest extends FlatSpec with Matchers with GeneratorDrivenPrope
     a [Exception] should be thrownBy {
       matrixToRowNormMatrix(mtx)
     }
+
+    the [Exception] thrownBy matrixToRowNormMatrix(mtx) should have message "requirement failed: RowNormMatrix: matrix isn't square"
   }
 
   it should "not contain negative entries" in {
@@ -34,5 +36,7 @@ class RowNormMatrixTest extends FlatSpec with Matchers with GeneratorDrivenPrope
     a [Exception] should be thrownBy {
       matrixToRowNormMatrix(mtx)
     }
+
+    the [Exception] thrownBy matrixToRowNormMatrix(mtx) should have message "requirement failed: RowNormMatrix: negative value in matrix"
   }
 }

@@ -8,6 +8,14 @@ import org.scalacheck.Gen
  */
 object Generators {
   /**
+   * A simple function that sums the structure of a sequence of machines,
+   * to be used in some generators.
+   * @param sm
+   * @return
+   */
+  def sum(sm: Seq[Machine]): State = sm.map(m => m.structure).sum
+
+  /**
    * Generates a vector of the given length.
    * @param n Desired list length.
    * @param g Generator of type T.
@@ -21,7 +29,7 @@ object Generators {
    * @param n Desired matrix dimension.
    * @return
    */
-  def squareMatrixOfN(n: Int): Gen[Matrix] = vectorOfN(n, vectorOfN(n, choose(0,100)))
+  def squareMatrixOfN(n: Int): Gen[Matrix] = vectorOfN(n, vectorOfN(n, chooseNum[Double](0,100)))
 
   /**
    * Generates a square matrix of random dimension between 1 and 150.
@@ -46,17 +54,27 @@ object Generators {
 
   def markovChain = for(mtx <- rowNormMatrix) yield MarkovChain(mtx)
 
-  def machine(f: Seq[Machine] => State): Gen[Machine] = oneOf(simpleMachine, complexMachine(f))
+  def linearFunction: Gen[Int => Double] =
+    for(d <- chooseNum[Double](1,10)) yield {
+      val f = {x: Int => x*d}
+      f
+    }
+
+  def machine: Gen[Machine] =
+    Gen.lzy(oneOf(simpleMachine, complexMachine, performanceMachine))
 
   def simpleMachine: Gen[SimpleMachine] =
-    for(mc <- markovChain; i <- chooseNum(0,mc.nStates, mc.nStates)) yield SimpleMachine(mc,i)
+    for(mc <- markovChain; i <- chooseNum[Int](0,mc.nStates, mc.nStates)) yield SimpleMachine(mc,i)
 
-  def complexMachine(f: Seq[Machine] => State): Gen[ComplexMachine] =
+  def complexMachine: Gen[ComplexMachine] =
     for{
       n <- choose(1,10)
-      lm <- listOfN(n, machine(f))
-    } yield ComplexMachine(lm:_*)(f)
+      lm <- listOfN(n, machine)
+    } yield ComplexMachine(lm:_*)(sum)
 
-  def performanceMachine(p: State => Double)(f: Seq[Machine] => State): Gen[PerformanceMachine] =
-    for(m <- machine(f)) yield PerformanceMachine(m)(p)
+  def performanceMachine: Gen[PerformanceMachine] =
+    for{
+      m <- machine
+      lf <- linearFunction
+    } yield PerformanceMachine(m)(lf)
 }

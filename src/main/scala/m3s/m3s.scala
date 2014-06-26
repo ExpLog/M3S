@@ -72,7 +72,7 @@ package object m3s {
   implicit def matrixToRowNormMatrix(mtx: Matrix) = {
     require(mtx.forall(l => l.length == mtx.length),
       "RowNormMatrix: matrix isn't square")
-    require(mtx.forall(x => x.forall( y => y >= 0 )), "RowNormMatrix: negative value in matrix.")
+    require(mtx.forall(x => x.forall( y => y >= 0 )), "RowNormMatrix: negative value in matrix")
 
     new RowNormMatrix{val m: Matrix = rowNorm(mtx)}
   }
