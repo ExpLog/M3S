@@ -1,22 +1,38 @@
-import org.scalatest.Matchers
-import org.scalatest.FunSpec
+import m3s._
+import org.scalatest.{FlatSpec, Matchers}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalacheck.Prop
+import Generators._
 
-/*
-Just a friendly reminder for the future:
-To use ScalaTest with Scala-2.11, we need to add both
-scala-combinators and scala-xml libs to the project
+class RowNormMatrixTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
+  "A row norm matrix" should "be row normalized" in {
+    forAll(rowNormMatrix)( mtx => mtx.m.forall(_.sum == 1.0))
+  }
 
-TODO: http://www.scalatest.org/user_guide/property_based_testing
-*/
+  it should "be square" in {
+    Prop.forAll(rowNormMatrix){ mtx =>
+      val row = mtx.length
+      (for(col <- mtx.m) yield row == col.length) forall(_ == true)
+    }
+  }
 
-class RowNormMatrixTest extends FunSpec with Matchers with GeneratorDrivenPropertyChecks {
-  describe("We can use test data from Scala check") {
-    it("runs the same but with different constructs") {
-      forAll {
-        (a: Int, b: Int) =>
-          whenever(b > 14) {(a + b) should be(b + a)}
-      }
+  it should "throw an exception if it isn't square" in {
+    val mtx = Vector(Vector(1.0,2.0), Vector(1.0))
+    a [Exception] should be thrownBy {
+      matrixToRowNormMatrix(mtx)
+    }
+  }
+
+  it should "not contain negative entries" in {
+    Prop.forAll(rowNormMatrix){ mtx =>
+      mtx.m forall(row => row forall(v => v >= 0))
+    }
+  }
+
+  it should "throw an exception if it contains a negative entry" in {
+    val mtx: Matrix = Vector(Vector(-1.0))
+    a [Exception] should be thrownBy {
+      matrixToRowNormMatrix(mtx)
     }
   }
 }

@@ -33,12 +33,7 @@ object Main {
     val parSim = new Simulation(perfPar)
     println(parSim.runWhile(x => x.curPerf > 3.0))
 
-
-//    import scala.pickling._
-//    import scala.pickling.binary._
-//    val mkp = mk.pickle
-//    println(mkp)
-//    println(mkp.unpickle[MarkovChain])
+//    val err = Vector(Vector(-1.0, 0.0), Vector(0.0,0.0))
   }
 }
 

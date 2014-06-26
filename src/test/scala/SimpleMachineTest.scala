@@ -1,0 +1,37 @@
+import m3s.{MarkovChain, CanSim}
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatest.{FlatSpec, Matchers}
+import m3s.machines.SimpleMachine
+import m3s.machines.SimpleMachine._
+import org.scalacheck.Prop
+import Generators._
+
+class SimpleMachineTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks{
+  "A SimpleMachine" should "implicitly convert to a SimpleMachineCanSim" in {
+    Prop.forAll(simpleMachine) {
+      sm =>
+        val smcs: CanSim[SimpleMachine] = sm
+        smcs.isInstanceOf[CanSim[SimpleMachine]]
+    }
+  }
+
+  it should "still be a SimpleMachine after one time step" in {
+    Prop.forAll(simpleMachine) {
+      sm =>
+        val sm2 = sm.step
+        sm2.isInstanceOf[SimpleMachine]
+    }
+  }
+
+  it should "throw an exception when created with an invalid state" in {
+    val mtx = Vector(Vector(1.0))
+
+    a [Exception] should be thrownBy {
+      val sm1 = SimpleMachine(mtx,-1)
+    }
+
+    a [Exception] should be thrownBy {
+      val sm2 = SimpleMachine(mtx, 1)
+    }
+  }
+}

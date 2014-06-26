@@ -2,41 +2,36 @@
  * Created by Leonardo Fontoura on 12/05/2014.
  */
 
-import org.scalatest.Matchers
-import org.scalatest.FunSpec
+import m3s.MarkovChain
+import org.scalatest.{FlatSpec, Matchers}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalacheck.Gen
+import org.scalacheck.{Gen, Prop}
+import Generators._
 
-/*
-Just a friendly reminder for the future:
-To use ScalaTest with Scala-2.11, we need to add both
-scala-combinators and scala-xml libs to the project
-
-http://www.scalatest.org/user_guide/property_based_testing
-http://www.scalatest.org/user_guide/generator_driven_property_checks
-*/
-
-class MarkovChainTest extends FunSpec with Matchers with GeneratorDrivenPropertyChecks {
-  val g = for(n <- Gen.chooseNum(1,10,2,3,4,5,6,7,8,9,10)) yield n
-
-  describe("alpha numeric string"){
-    it("should print"){
-      forAll (Gen.alphaStr)((str) => println(str))
-    }
-  }
-
-  describe("Figuring out what specials is") {
-    it("should exclude all special numbers"){
-      forAll (g)((n) => n == 1)
-    }
-  }
-
-  describe("We can use test data from Scala check") {
-    it("runs the same but with different constructs") {
-      forAll {
-        (a: Int, b: Int) =>
-          whenever(b > 14) {(a + b) should be(b + a)}
+class MarkovChainTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
+  "A markov chain" should "transition to a valid state" in {
+    Prop.forAll(markovChain){
+      mtx => Prop.forAll(Gen.choose(1,mtx.nStates)){
+        i =>
+          val state = mtx.transition(i)
+          state >= 0 && state < mtx.nStates
       }
+    }
+  }
+
+  it should "be created implicitly from a non-negative square matrix" in {
+    Prop.forAll(squareMatrix){
+      mtx =>
+        val mc: MarkovChain = mtx
+        mc.isInstanceOf[MarkovChain]
+    }
+  }
+
+  it should "be created implicitly from a RowNormMatrix" in {
+    Prop.forAll(rowNormMatrix){
+      mtx =>
+        val mc: MarkovChain = mtx
+        mc.isInstanceOf[MarkovChain]
     }
   }
 }

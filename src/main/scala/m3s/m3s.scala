@@ -50,7 +50,7 @@ package object m3s {
     }
 
   /**
-   * Used to indicate that a matrix is row normalized.
+   * Used to indicate that a matrix is row normalized and only cointains non-negative numbers.
    */
   trait RowNormMatrix {
     val m: Matrix
@@ -69,11 +69,11 @@ package object m3s {
    * @param mtx A [[Matrix]]
    * @return A row normalized matrix
    */
-  implicit def RowNormMatrix(mtx: Matrix) = new RowNormMatrix {
-    val m: Matrix = rowNorm(mtx)
+  implicit def matrixToRowNormMatrix(mtx: Matrix) = {
+    require(mtx.forall(l => l.length == mtx.length),
+      "RowNormMatrix: matrix isn't square")
+    require(mtx.forall(x => x.forall( y => y >= 0 )), "RowNormMatrix: negative value in matrix.")
 
-    require(m.length*m.length == m.foldLeft(0){(n,v) => n+v.length},
-      "MarkovChain: matrix isn't square")
-    require(m.forall(x => x.forall( y => y >= 0 )), "MarkovChain: negative value in matrix.")
+    new RowNormMatrix{val m: Matrix = rowNorm(mtx)}
   }
 }

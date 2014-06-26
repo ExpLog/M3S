@@ -1,6 +1,3 @@
-/**
- * Created by Leonardo Fontoura on 06/05/2014.
- */
 package m3s
 
 import MarkovChain._
@@ -11,7 +8,7 @@ import scala.language.implicitConversions
  * A Markov Chain represented by a transition matrix.
  * @param matrix A [[RowNormMatrix]] with all non-negative values. Its rows will be normalized.
  */
-class MarkovChain(matrix: RowNormMatrix) {
+class MarkovChain(val matrix: RowNormMatrix) {
   /**
    * Total number of [[State]]. Note that since the first state is 0,
    * that the state `s = nStates` is not a valid state.
@@ -32,8 +29,8 @@ class MarkovChain(matrix: RowNormMatrix) {
   }
 
   override def toString: String = {
-    val lines: Vector[String] = matrix.m.map(x => x.mkString(" "))
-    lines.foldLeft("")(_+"\n"+_)
+    val lines: Vector[String] = matrix.m.map(x => x.mkString("[",", ","]"))
+    lines.mkString("[", ", ", "]")
   }
 }
 
@@ -47,6 +44,27 @@ object MarkovChain {
    * @return A Markov Chain defined by `m`
    */
   def apply(m: Matrix): MarkovChain = new MarkovChain(m)
+
+  /**
+   * Factory method for [[MarkovChain]].
+   * @param m A [[RowNormMatrix]]
+   * @return A Markov Chain defined by `m`
+   */
+  def apply(m: RowNormMatrix): MarkovChain = new MarkovChain(m)
+
+  /**
+   * Implicit conversion from [[Matrix]] to [[MarkovChain]].
+   * @param m Square non-negative matrix.
+   * @return
+   */
+  implicit def matrixToMarkovChain(m: Matrix) = new MarkovChain(m)
+
+  /**
+   * Implicit conversion from [[RowNormMatrix]] to [[MarkovChain]].
+   * @param m
+   * @return
+   */
+  implicit def rowNormMatrixToMarkovChain(m: RowNormMatrix) = new MarkovChain(m)
 
   /**
    * Random number generator used to calculate transitions.
