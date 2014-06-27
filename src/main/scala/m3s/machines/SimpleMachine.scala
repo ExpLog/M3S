@@ -15,10 +15,10 @@ case class SimpleMachine(private val m: MarkovChain, private val state: State) e
   override def structure: State = state
 }
 
-class SimpleMachineSim(m: SimpleMachine) extends CanSim[SimpleMachine] {
-  def step = m.step
-}
-
 object SimpleMachine {
+  class SimpleMachineSim(m: SimpleMachine) extends CanSim[SimpleMachine] {
+    def step = m.step
+  }
+
   implicit def CanSimSimpleMachine(m: SimpleMachine): CanSim[SimpleMachine] = new SimpleMachineSim(m)
 }

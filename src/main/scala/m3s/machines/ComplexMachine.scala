@@ -32,10 +32,10 @@ case class ComplexMachine(ms: Machine*)(val f: Seq[Machine] => State) extends Ma
   override def structure = f(ms)
 }
 
-class ComplexMachineSim(m: ComplexMachine) extends CanSim[ComplexMachine] {
-  def step = m.step
-}
-
 object ComplexMachine {
+  class ComplexMachineSim(m: ComplexMachine) extends CanSim[ComplexMachine] {
+    def step = m.step
+  }
+
   implicit def CanSimComplexMachine(m: ComplexMachine): CanSim[ComplexMachine] = new ComplexMachineSim(m)
 }

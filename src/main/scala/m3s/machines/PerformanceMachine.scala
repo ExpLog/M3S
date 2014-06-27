@@ -26,11 +26,11 @@ case class PerformanceMachine(m: Machine)(p: State => Double) extends Machine {
   def curPerf: Double = sPerf(structure)
 }
 
-class PerformanceMachineSim(m: PerformanceMachine) extends CanSim[PerformanceMachine] {
-  def step = m.step
-}
-
 object PerformanceMachine {
+  class PerformanceMachineSim(m: PerformanceMachine) extends CanSim[PerformanceMachine] {
+    def step = m.step
+  }
+
   implicit def CanSimPerformanceMachine(m: PerformanceMachine): CanSim[PerformanceMachine] =
     new PerformanceMachineSim(m)
 }
