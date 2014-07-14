@@ -1,4 +1,5 @@
 import m3s.CanSim
+import m3s.machines.output.LinearOutput
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FlatSpec, Matchers}
 import m3s.machines.SimpleMachine
@@ -26,15 +27,15 @@ class SimpleMachineTest extends FlatSpec with Matchers with GeneratorDrivenPrope
     val mtx = Vector(Vector(1.0))
 
     a [Exception] should be thrownBy {
-      val sm1 = SimpleMachine(mtx,-1)
+      val sm1 = SimpleMachine(mtx,-1)(LinearOutput(1.0,0.0))
     }
 
-    the [Exception] thrownBy SimpleMachine(mtx,-1) should have message "requirement failed: SimpleMachine: invalid initial state"
+    the [Exception] thrownBy SimpleMachine(mtx,-1)(LinearOutput(1.0,0.0)) should have message "requirement failed: SimpleMachine: invalid initial state"
 
     a [Exception] should be thrownBy {
-      val sm2 = SimpleMachine(mtx, 1)
+      val sm2 = SimpleMachine(mtx, 1)(LinearOutput(1.0,0.0))
     }
 
-    the [Exception] thrownBy SimpleMachine(mtx,1) should have message "requirement failed: SimpleMachine: invalid initial state"
+    the [Exception] thrownBy SimpleMachine(mtx,1)(LinearOutput(1.0,0.0)) should have message "requirement failed: SimpleMachine: invalid initial state"
   }
 }

@@ -1,5 +1,8 @@
 import m3s._
 import m3s.machines._
+import m3s.machines.connectors.Parallel
+import m3s.machines.output.LinearOutput
+import m3s.markov.DenseMarkovChain
 import org.scalacheck.Gen._
 import org.scalacheck.Gen
 
@@ -7,14 +10,6 @@ import org.scalacheck.Gen
  * Contains ScalaCheck generators for all classes in [[m3s]] package.
  */
 object Generators {
-  /**
-   * A simple function that sums the structure of a sequence of machines,
-   * to be used in some generators.
-   * @param sm
-   * @return
-   */
-  def sum(sm: Seq[Machine]): State = sm.map(m => m.structure).sum
-
   /**
    * Generates a vector of the given length.
    * @param n Desired list length.
@@ -50,9 +45,9 @@ object Generators {
    */
   def rowNormMatrix = for(mtx <- squareMatrix) yield matrixToRowNormMatrix(mtx)
 
-  def markovChainOfN(n: Int) = for(mtx <- rowNormMatrixOfN(n)) yield MarkovChain(mtx)
+  def markovChainOfN(n: Int) = for(mtx <- rowNormMatrixOfN(n)) yield DenseMarkovChain(mtx)
 
-  def markovChain = for(mtx <- rowNormMatrix) yield MarkovChain(mtx)
+  def markovChain = for(mtx <- rowNormMatrix) yield DenseMarkovChain(mtx)
 
   def linearFunction: Gen[Int => Double] =
     for(d <- choose[Double](1,10)) yield {
@@ -61,22 +56,15 @@ object Generators {
     }
 
   def machine: Gen[Machine] =
-    Gen.lzy(oneOf(simpleMachine, complexMachine, performanceMachine))
+    Gen.lzy(oneOf(simpleMachine, complexMachine))
 
   def simpleMachine: Gen[SimpleMachine] =
-    for(mc <- markovChain; i <- choose[Int](0,mc.nStates-1)) yield SimpleMachine(mc,i)
+    for(mc <- markovChain; i <- choose[Int](0,mc.nStates-1)) yield SimpleMachine(mc,i)(LinearOutput(1.0, 0.0))
 
   def complexMachine: Gen[ComplexMachine] = Gen.lzy{
     for{
       n <- choose(1,2)
       lm <- listOfN(n, machine)
-    } yield ComplexMachine(lm:_*)(sum)
-  }
-
-  def performanceMachine: Gen[PerformanceMachine] = Gen.lzy{
-    for{
-      m <- machine
-      lf <- linearFunction
-    } yield PerformanceMachine(m)(lf)
+    } yield ComplexMachine(lm)(Parallel)
   }
 }

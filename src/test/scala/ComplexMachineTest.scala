@@ -1,3 +1,4 @@
+import m3s.machines.connectors.Parallel
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{Matchers, FlatSpec}
 import m3s.CanSim
@@ -25,9 +26,9 @@ class ComplexMachineTest extends FlatSpec with Matchers with GeneratorDrivenProp
   it should "throw an exception if it doesn't have any children machine" in {
     val emptyList: List[Machine] = List()
     a [Exception] should be thrownBy {
-      ComplexMachine(emptyList:_*)(sum)
+      ComplexMachine(emptyList)(Parallel)
     }
 
-    the [Exception] thrownBy ComplexMachine(emptyList:_*)(sum) should have message "requirement failed: ComplexMachine: empty list of children machinery"
+    the [Exception] thrownBy ComplexMachine(emptyList)(Parallel) should have message "requirement failed: ComplexMachine: empty list of children machinery"
   }
 }

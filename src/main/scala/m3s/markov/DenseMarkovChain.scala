@@ -1,14 +1,13 @@
-package m3s
+package m3s.markov
 
-import MarkovChain._
-import scala.util.Random
 import scala.language.implicitConversions
+import m3s._
 
 /**
  * A Markov Chain represented by a transition matrix.
  * @param matrix A [[RowNormMatrix]] with all non-negative values. Its rows will be normalized.
  */
-class MarkovChain(val matrix: RowNormMatrix) {
+class DenseMarkovChain(val matrix: RowNormMatrix) {
   /**
    * Total number of [[State]]. Note that since the first state is 0,
    * that the state `s = nStates` is not a valid state.
@@ -35,39 +34,34 @@ class MarkovChain(val matrix: RowNormMatrix) {
 }
 
 /**
- * Helper functions and random value generation for [[MarkovChain]].
+ * Helper functions and random value generation for [[DenseMarkovChain]].
  */
-object MarkovChain {
+object DenseMarkovChain {
    /**
-   * Factory method for [[MarkovChain]].
+   * Factory method for [[DenseMarkovChain]].
    * @param m A square [[Matrix]]
    * @return A Markov Chain defined by `m`
    */
-  def apply(m: Matrix): MarkovChain = new MarkovChain(m)
+  def apply(m: Matrix): DenseMarkovChain = new DenseMarkovChain(m)
 
   /**
-   * Factory method for [[MarkovChain]].
+   * Factory method for [[DenseMarkovChain]].
    * @param m A [[RowNormMatrix]]
    * @return A Markov Chain defined by `m`
    */
-  def apply(m: RowNormMatrix): MarkovChain = new MarkovChain(m)
+  def apply(m: RowNormMatrix): DenseMarkovChain = new DenseMarkovChain(m)
 
   /**
-   * Implicit conversion from [[Matrix]] to [[MarkovChain]].
+   * Implicit conversion from [[Matrix]] to [[DenseMarkovChain]].
    * @param m Square non-negative matrix.
    * @return
    */
-  implicit def matrixToMarkovChain(m: Matrix) = new MarkovChain(m)
+  implicit def matrixToMarkovChain(m: Matrix) = new DenseMarkovChain(m)
 
   /**
-   * Implicit conversion from [[RowNormMatrix]] to [[MarkovChain]].
+   * Implicit conversion from [[RowNormMatrix]] to [[DenseMarkovChain]].
    * @param m
    * @return
    */
-  implicit def rowNormMatrixToMarkovChain(m: RowNormMatrix) = new MarkovChain(m)
-
-  /**
-   * Random number generator used to calculate transitions.
-   */
-  val rand: Random = new Random(System.currentTimeMillis)
+  implicit def rowNormMatrixToMarkovChain(m: RowNormMatrix) = new DenseMarkovChain(m)
 }

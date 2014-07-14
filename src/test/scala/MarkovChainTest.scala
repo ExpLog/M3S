@@ -1,4 +1,4 @@
-import m3s.MarkovChain
+import m3s.markov.DenseMarkovChain
 import org.scalatest.{FlatSpec, Matchers}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalacheck.Gen
@@ -18,16 +18,16 @@ class MarkovChainTest extends FlatSpec with Matchers with GeneratorDrivenPropert
   it should "be created implicitly from a non-negative square matrix" in {
     forAll(squareMatrix){
       mtx =>
-        val mc: MarkovChain = mtx
-        mc.isInstanceOf[MarkovChain]
+        val mc: DenseMarkovChain = mtx
+        mc.isInstanceOf[DenseMarkovChain]
     }
   }
 
   it should "be created implicitly from a RowNormMatrix" in {
     forAll(rowNormMatrix){
       mtx =>
-        val mc: MarkovChain = mtx
-        mc.isInstanceOf[MarkovChain]
+        val mc: DenseMarkovChain = mtx
+        mc.isInstanceOf[DenseMarkovChain]
     }
   }
 }

@@ -2,21 +2,33 @@
  * Created by Leonardo Fontoura on 09/05/2014.
  */
 
+import m3s.markov.DenseMarkovChain
 import scala.language.implicitConversions
+import scala.util.Random
 
 /**
  * Framework for simulating stochastic machines.
  */
 package object m3s {
   /**
-   * A state is an Int that represents the current state of a [[MarkovChain]]
+   * A State is an Int that represents the current state of a [[DenseMarkovChain]]
    */
   type State = Int
+
+  /**
+   * A Performance is a double that represents the current performance of a [[m3s.machines.Machine]]
+   */
+  type Performance = Double
 
   /**
    * Defines a matrix as a vector of vector of doubles.
    */
   type Matrix = Vector[Vector[Double]]
+
+  /**
+   * Random number generator.
+   */
+  val rand: Random = new Random(System.currentTimeMillis)
 
   /**
    * Implicitly converts a file containing a matrix into that [[Matrix]].
