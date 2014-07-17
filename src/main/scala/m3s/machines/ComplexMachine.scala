@@ -25,6 +25,12 @@ case class ComplexMachine(ms: List[Machine])(val conn: Connector) extends Machin
 
   override def performance = conn(ms)
 
+  /**
+   * Merges two [[ComplexMachine]] together, using a function `f` to handle [[SimpleMachine]].
+   * @param that The second ComplexMachine
+   * @param f Function that takes 2 SimpleMachine and returns another one
+   * @return
+   */
   def mergeWith(that: ComplexMachine)
                (f: (SimpleMachine, SimpleMachine) => SimpleMachine ): ComplexMachine = {
     require(this.conn == that.conn)
@@ -39,11 +45,9 @@ case class ComplexMachine(ms: List[Machine])(val conn: Connector) extends Machin
 }
 
 object ComplexMachine {
-  class ComplexMachineSim(m: ComplexMachine) extends CanSim[ComplexMachine] {
+  implicit class ComplexMachineSim(m: ComplexMachine) extends CanSim[ComplexMachine] {
     def step = m.step
   }
-
-  implicit def CanSimComplexMachine(m: ComplexMachine): CanSim[ComplexMachine] = new ComplexMachineSim(m)
 
   def countSM(cm: ComplexMachine): Int = cm.ms.map{
     case m: SimpleMachine => 1

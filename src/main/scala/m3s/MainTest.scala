@@ -38,6 +38,12 @@ object MainTest extends App {
   println(cm4)
   println(cm5)
 
-  val repairList = RepairableSM.spawnRandomRepairList(10)
-  println(repairList)
+  val repairList1 = RepairableSM.spawnRandomRepairList(10)
+  val repairList2 = RepairableSM.spawnRandomRepairList(10)
+  val repairList3 = NaturalSelection.mixLists(repairList1, repairList2)
+  val repairList4 = NaturalSelection.randomMixList(repairList1, repairList2)
+  println(repairList1)
+  println(repairList2)
+  //println(repairList3)
+  println(repairList4)
 }

@@ -8,7 +8,7 @@ package m3s
  * Needs to be extended to provide evidence that a class can be simulated.
  * @tparam A Typeclass parameter
  */
-trait CanSim[A]{
+trait CanSim[+A]{
   def step: A
 }
 

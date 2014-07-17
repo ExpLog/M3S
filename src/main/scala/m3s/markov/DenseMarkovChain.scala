@@ -20,9 +20,9 @@ class DenseMarkovChain(val matrix: RowNormMatrix) {
    * @return Next state of the chain.
    */
   def transition(i: State): State = {
-    def aux(db: Double, acc: Double, j: State): State = {
+    def aux(u: Double, acc: Double, j: State): State = {
       val prob = matrix(i)(j)
-      if(db < acc + prob) j else aux(db, acc + prob, j+1)
+      if(u < acc + prob) j else aux(u, acc + prob, j+1)
     }
     aux(rand.nextDouble(), 0.0, 0)
   }

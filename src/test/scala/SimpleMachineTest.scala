@@ -30,12 +30,12 @@ class SimpleMachineTest extends FlatSpec with Matchers with GeneratorDrivenPrope
       val sm1 = SimpleMachine(mtx,-1)(LinearOutput(1.0,0.0))
     }
 
-    the [Exception] thrownBy SimpleMachine(mtx,-1)(LinearOutput(1.0,0.0)) should have message "requirement failed: SimpleMachine: invalid initial state"
+    the [Exception] thrownBy SimpleMachine(mtx,-1)(LinearOutput(1.0,0.0)) should have message "requirement failed: SimpleMachine: invalid initial state -1"
 
     a [Exception] should be thrownBy {
       val sm2 = SimpleMachine(mtx, 1)(LinearOutput(1.0,0.0))
     }
 
-    the [Exception] thrownBy SimpleMachine(mtx,1)(LinearOutput(1.0,0.0)) should have message "requirement failed: SimpleMachine: invalid initial state"
+    the [Exception] thrownBy SimpleMachine(mtx,1)(LinearOutput(1.0,0.0)) should have message "requirement failed: SimpleMachine: invalid initial state 1"
   }
 }

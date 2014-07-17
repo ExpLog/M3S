@@ -52,10 +52,10 @@ object RepairableSM{
    * @param n Length of repair lists.
    * @return
    */
-  def repairCM(cm: ComplexMachine, n: Int): ComplexMachine = {
+  def addRepairCM(cm: ComplexMachine, n: Int): ComplexMachine = {
     val ms2 = for(m <- cm.ms) yield m match {
       case m: SimpleMachine => randomRepairSM(m,n)
-      case m: ComplexMachine => repairCM(m,n)
+      case m: ComplexMachine => addRepairCM(m,n)
     }
     ComplexMachine(ms2)(cm.conn)
   }

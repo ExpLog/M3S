@@ -11,7 +11,7 @@ import m3s.markov.DenseMarkovChain
  * @param state The initial state of the machine
  */
 case class SimpleMachine(m: DenseMarkovChain, state: State)(val out: Output) extends Machine {
-  require(state >= 0 && state < m.nStates, "SimpleMachine: invalid initial state")
+  require(state >= 0 && state < m.nStates, s"SimpleMachine: invalid initial state $state")
 
   def this(mc: DenseMarkovChain)(out: Output) = this(mc, mc.nStates-1)(out)
 
@@ -21,9 +21,7 @@ case class SimpleMachine(m: DenseMarkovChain, state: State)(val out: Output) ext
 }
 
 object SimpleMachine {
-  class SimpleMachineSim(m: SimpleMachine) extends CanSim[SimpleMachine] {
+  implicit class SimpleMachineSim(m: SimpleMachine) extends CanSim[SimpleMachine] {
     def step = m.step
   }
-
-  implicit def CanSimSimpleMachine(m: SimpleMachine): CanSim[SimpleMachine] = new SimpleMachineSim(m)
 }
