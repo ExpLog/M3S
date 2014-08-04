@@ -5,6 +5,7 @@ import m3s.machines.connectors.{Series, Parallel}
 import m3s.machines.ComplexMachine._
 import m3s.machines.output.LinearOutput
 
+
 object MainTest extends App {
   val matrix = Vector(Vector(1.0, 0.0, 0.0), Vector(0.2, 0.8, 0.0), Vector(0.0, 0.1, 0.9))
   val output = LinearOutput(2.0,1.5)
@@ -46,4 +47,9 @@ object MainTest extends App {
   println(repairList2)
   //println(repairList3)
   println(repairList4)
+
+  import collection.optimizer._
+  val a = List.fill(100)(1)
+  val b: List[Int] = optimize{ a.map{x => x+1} }
+  println(b)
 }

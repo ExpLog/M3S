@@ -1,7 +1,3 @@
-/**
- * Created by Guest on 08/05/14.
- */
-
 package m3s
 
 /**
@@ -18,34 +14,54 @@ trait CanSim[+A]{
  *
  * TODO: add examples of how to use this
  *
- * @param obj
+ * @param simObj
  * @param evidence$1
  * @tparam A
  */
-class Simulation[A <% CanSim[A]](obj: A){
+class Simulation[A <% CanSim[A]](simObj: A){
   /**
    * Simulates the object for `t` time steps
    * @param t Number of steps to run the simulation.
    * @return The simulation's object after `t` steps
    */
   def run(t: Int): A ={
-    def aux(o: A, t: Int): A = t > 0 match {
-      case true => aux(o.step, t - 1)
-      case false => o
+    def aux(obj: A, ti: Int): A = ti < t match {
+      case true   => aux(obj.step, t + 1)
+      case false  => obj
     }
-    aux(obj, t)
+    aux(simObj, 0)
   }
 
   /**
-   * Simulates the object while the expression `f(obj)` is true.
-   * @param f Function that takes a sequence of machines and outputs to a Boolean
-   * @return Pair consisting of the final object and an Int, representing the first failure state and the number of steps until failure
+   * Simulates the object while the expression `f(obj)` is true, up to a given time.
+   * @param t Time
+   * @param f Evaluation0
+   * @return
    */
-  def runWhile(f: A => Boolean): (A,Int) = {
-    def aux(o: A, t: Int): (A,Int) = f(o) match {
-      case true => aux(o.step, t+1)
-      case false => (o,t)
+  def runWhile(t: Int)(f: A => Boolean): (A,Int) = {
+    def aux(obj: A, ti: Int): (A,Int) = ti < t match {
+      case true   =>  f(obj) match {
+        case true   =>  aux(obj.step, ti+1)
+        case false  =>  (obj,ti)
+      }
+      case false  => (obj,ti)
     }
-    aux(obj, 0)
+
+    aux(simObj, 0)
+  }
+}
+
+object Simulation {
+
+
+  /**
+   * Estimates the reliability of a machine
+   */
+  def estimateReliability[A](sim: Simulation[A], time: Int)
+                            (f: A => Boolean): Double = {
+    val initialSims = List.fill(100)(sim.runWhile(time)(f))
+    val randomVars = for((obj, t) <- initialSims) yield if(t == time) 1 else 0
+    val mean = randomVars.sum/100.0
+    val variance = (for(xi <- randomVars) yield (xi - mean)*(xi - mean)).sum/99.0
   }
 }

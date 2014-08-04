@@ -12,10 +12,11 @@ trait Species[A] {
 }
 
 class NaturalSelection[A <% Species[A]](origin: A) {
+
   import NaturalSelection._
 
   type RankedIndividual = (Individual[A], Double)
-  
+
   /**
    * Generates a population of size `n`.
    * @param n Size
@@ -29,8 +30,9 @@ class NaturalSelection[A <% Species[A]](origin: A) {
    * @param pop List of individuals
    * @return
    */
-  def rank(pop: List[Individual[A]]): List[RankedIndividual] =
-    {pop map {case x => (x, origin.fitness(x))} sortBy(_._2)}.reverse
+  def rank(pop: List[Individual[A]]): List[RankedIndividual] = {
+    pop map { case x => (x, origin.fitness(x))} sortBy (_._2)
+  }.reverse
 
   //TODO: remove this function?
   /**
@@ -40,8 +42,8 @@ class NaturalSelection[A <% Species[A]](origin: A) {
    * @return
    */
   def cull[B](list: List[B], perc: Double) = {
-//    require(perc >= 0.0 && perc <= 1.0)
-    val n = (1 - perc)*list.length
+    //    require(perc >= 0.0 && perc <= 1.0)
+    val n = (1 - perc) * list.length
     list take n.toInt
   }
 
@@ -57,8 +59,8 @@ class NaturalSelection[A <% Species[A]](origin: A) {
             size: Int,
             mutationRate: Double): List[Individual[A]] = {
     val totalRank = rankedPop.map(x => x._2).sum
-    val popProb = rankedPop map {case (i,r) => (i,r/totalRank)}
-    List.fill(size){
+    val popProb = rankedPop map { case (i, r) => (i, r / totalRank)}
+    List.fill(size) {
       val mate1 = choose(popProb)
       val mate2 = choose(popProb)
       origin.breed(mate1, mate2, mutationRate)
@@ -73,14 +75,14 @@ class NaturalSelection[A <% Species[A]](origin: A) {
    * @param mutationRate Mutation rate of new individuals
    * @return
    */
-  def optimize(popSize: Int,
-               maxGen: Int,
-               cullRate: Double,
-               mutationRate: Double): A = {
+  def run(popSize: Int,
+          maxGen: Int,
+          cullRate: Double,
+          mutationRate: Double): A = {
     //require(popSize > 0)
 
     def aux(pop: List[Individual[A]], best: RankedIndividual, loop: Int): A = {
-      if(loop == 0) best._1.i
+      if (loop == 0) best._1.i
       else {
         val rankedPop = rank(pop)
         val bestIndividual = rankedPop.head
@@ -100,7 +102,7 @@ class NaturalSelection[A <% Species[A]](origin: A) {
     val culledPop = cull(rankedPop, cullRate)
     val newPop = breed(culledPop, popSize, mutationRate)
 
-    aux(newPop, bestIndividual, maxGen-1)
+    aux(newPop, bestIndividual, maxGen - 1)
   }
 }
 
@@ -116,16 +118,16 @@ object NaturalSelection {
    * @tparam A
    * @return
    */
-  def choose[A](list: List[(A,Double)]): A = {
-    def aux(u: Double, acc: Double, auxList: List[(A,Double)]): A = {
+  def choose[A](list: List[(A, Double)]): A = {
+    def aux(u: Double, acc: Double, auxList: List[(A, Double)]): A = {
       val prob = auxList.head._2
-      if(u < acc + prob) auxList.head._1 else aux(u, acc+prob, auxList.tail)
+      if (u < acc + prob) auxList.head._1 else aux(u, acc + prob, auxList.tail)
     }
-    
+
     val r = rand.nextDouble()
     aux(r, 0.0, list)
   }
-  
+
   //TODO: find better names for mixLists/mixListsWith and randomMixLists/randomMixListsWith
   //these functions will be used to mate machines
   /**
@@ -138,7 +140,7 @@ object NaturalSelection {
    * @return Mixed list
    */
   def mixLists[A](l1: List[A], l2: List[A]): List[A] =
-    mixListsWith(l1,l2){case x => x}
+    mixListsWith(l1, l2) { case x => x}
 
   /**
    * Randomly mix two lists, applying a function to each element of the result.
@@ -152,19 +154,19 @@ object NaturalSelection {
    */
   def mixListsWith[A](l1: List[A], l2: List[A])
                      (f: A => A): List[A] = {
-    val maxLength = Math.max(l1.length, l2.length)
-    val cutOff = rand.nextInt(maxLength)
-    val u = rand.nextDouble()
+      val maxLength = Math.max(l1.length, l2.length)
+      val cutOff = rand.nextInt(maxLength)
+      val u = rand.nextDouble()
 
-    if(u <= 0.5) {
-      val start = l1.take(cutOff)
-      val end = l2.drop(cutOff)
-      List.concat(start,end)
-    } else {
-      val start = l2.take(cutOff)
-      val end = l1.drop(cutOff)
-      List.concat(start,end)
-    } map f
+      if (u <= 0.5) {
+        val start = l1.take(cutOff)
+        val end = l2.drop(cutOff)
+        List.concat(start, end)
+      } else {
+        val start = l2.take(cutOff)
+        val end = l1.drop(cutOff)
+        List.concat(start, end)
+      } map f
   }
 
   /**
@@ -179,9 +181,9 @@ object NaturalSelection {
    */
   def randomMixListWith[A](l1: List[A], l2: List[A])
                           (f: A => A): List[A] = {
-    val zipped = l1 zip l2
-    val chosen = zipped map {case (x,y) => if(rand.nextDouble < 0.5) x else y}
-    chosen map f
+      val zipped = l1 zip l2
+      val chosen = zipped map { case (x, y) => if (rand.nextDouble() < 0.5) x else y}
+      chosen map f
   }
 
   /**
@@ -193,5 +195,5 @@ object NaturalSelection {
    * @param l2
    * @return
    */
-  def randomMixList[A](l1: List[A], l2: List[A]) = randomMixListWith(l1,l2){case x => x}
+  def randomMixList[A](l1: List[A], l2: List[A]) = randomMixListWith(l1, l2) { case x => x}
 }

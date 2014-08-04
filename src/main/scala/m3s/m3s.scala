@@ -1,17 +1,12 @@
-/**
- * Created by Leonardo Fontoura on 09/05/2014.
- */
-
-import m3s.markov.DenseMarkovChain
 import scala.language.implicitConversions
-import scala.util.Random
+import scala.collection.par.Scheduler.localRandom
 
 /**
  * Framework for simulating stochastic machines.
  */
 package object m3s {
   /**
-   * A State is an Int that represents the current state of a [[DenseMarkovChain]]
+   * A State is an Int that represents the current state of a [[m3s.markov.DenseMarkovChain]]
    */
   type State = Int
 
@@ -28,7 +23,7 @@ package object m3s {
   /**
    * Random number generator.
    */
-  val rand: Random = new Random(System.currentTimeMillis)
+  val rand = localRandom
 
   /**
    * Implicitly converts a file containing a matrix into that [[Matrix]].
