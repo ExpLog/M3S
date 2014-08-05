@@ -1,21 +1,36 @@
 package m3s
 
-case class Individual[A](i: A)
-
 trait Species[A] {
   //TODO: decide if mutation should be a method by itself or done inside breeding
-  def spawn: Individual[A]
 
-  def breed(i1: Individual[A], i2: Individual[A], mutationRate: Double): Individual[A]
+  /**
+   * Spawns a new individual of type A.
+   * @return
+   */
+  def spawn: A
 
-  def fitness(i: Individual[A]): Double
+  /**
+   * Breeds two individuals of type A, with a mutation chance.
+   * @param i1
+   * @param i2
+   * @param mutationRate
+   * @return
+   */
+  def breed(i1: A, i2: A, mutationRate: Double): A
+
+  /**
+   * Decides how fit an individual is. The more positive, the better.
+   * @param i
+   * @return
+   */
+  def fitness(i: A): Double
 }
 
-class NaturalSelection[A <% Species[A]](origin: A) {
+class NaturalSelection[A](origin: Species[A]) {
 
   import NaturalSelection._
 
-  type RankedIndividual = (Individual[A], Double)
+  type RankedIndividual = (A, Double)
 
   /**
    * Generates a population of size `n`.
@@ -30,9 +45,10 @@ class NaturalSelection[A <% Species[A]](origin: A) {
    * @param pop List of individuals
    * @return
    */
-  def rank(pop: List[Individual[A]]): List[RankedIndividual] = {
-    pop map { case x => (x, origin.fitness(x))} sortBy (_._2)
-  }.reverse
+  def rank(pop: List[A]): List[RankedIndividual] = {
+    println(pop.head, origin.fitness(pop.head))
+    pop.map{ case x => (x, origin.fitness(x))}.sortBy(_._2).reverse
+  }
 
   //TODO: remove this function?
   /**
@@ -57,7 +73,7 @@ class NaturalSelection[A <% Species[A]](origin: A) {
    */
   def breed(rankedPop: List[RankedIndividual],
             size: Int,
-            mutationRate: Double): List[Individual[A]] = {
+            mutationRate: Double): List[A] = {
     val totalRank = rankedPop.map(x => x._2).sum
     val popProb = rankedPop map { case (i, r) => (i, r / totalRank)}
     List.fill(size) {
@@ -81,8 +97,8 @@ class NaturalSelection[A <% Species[A]](origin: A) {
           mutationRate: Double): A = {
     //require(popSize > 0)
 
-    def aux(pop: List[Individual[A]], best: RankedIndividual, loop: Int): A = {
-      if (loop == 0) best._1.i
+    def aux(pop: List[A], best: RankedIndividual, loop: Int): A = {
+      if (loop == 0) best._1
       else {
         val rankedPop = rank(pop)
         val bestIndividual = rankedPop.head
@@ -97,6 +113,7 @@ class NaturalSelection[A <% Species[A]](origin: A) {
     val pop = populate(popSize)
 
     val rankedPop = rank(pop)
+    println(rankedPop.map(x => x._2))
     val bestIndividual = rankedPop.head
 
     val culledPop = cull(rankedPop, cullRate)
@@ -121,9 +138,9 @@ object NaturalSelection {
   def choose[A](list: List[(A, Double)]): A = {
     def aux(u: Double, acc: Double, auxList: List[(A, Double)]): A = {
       val prob = auxList.head._2
+//      println(auxList.length, prob)
       if (u < acc + prob) auxList.head._1 else aux(u, acc + prob, auxList.tail)
     }
-
     val r = rand.nextDouble()
     aux(r, 0.0, list)
   }
@@ -154,19 +171,19 @@ object NaturalSelection {
    */
   def mixListsWith[A](l1: List[A], l2: List[A])
                      (f: A => A): List[A] = {
-      val maxLength = Math.max(l1.length, l2.length)
-      val cutOff = rand.nextInt(maxLength)
-      val u = rand.nextDouble()
+    val maxLength = Math.max(l1.length, l2.length)
+    val cutOff = rand.nextInt(maxLength)
+    val u = rand.nextDouble()
 
-      if (u <= 0.5) {
-        val start = l1.take(cutOff)
-        val end = l2.drop(cutOff)
-        List.concat(start, end)
-      } else {
-        val start = l2.take(cutOff)
-        val end = l1.drop(cutOff)
-        List.concat(start, end)
-      } map f
+    if (u <= 0.5) {
+      val start = l1.take(cutOff)
+      val end = l2.drop(cutOff)
+      List.concat(start, end)
+    } else {
+      val start = l2.take(cutOff)
+      val end = l1.drop(cutOff)
+      List.concat(start, end)
+    } map f
   }
 
   /**
@@ -181,9 +198,9 @@ object NaturalSelection {
    */
   def randomMixListWith[A](l1: List[A], l2: List[A])
                           (f: A => A): List[A] = {
-      val zipped = l1 zip l2
-      val chosen = zipped map { case (x, y) => if (rand.nextDouble() < 0.5) x else y}
-      chosen map f
+    val zipped = l1 zip l2
+    val chosen = zipped map { case (x, y) => if (rand.nextDouble() < 0.5) x else y}
+    chosen map f
   }
 
   /**

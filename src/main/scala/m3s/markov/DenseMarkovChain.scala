@@ -22,13 +22,13 @@ class DenseMarkovChain(val matrix: RowNormMatrix) {
   def transition(i: State): State = {
     def aux(u: Double, acc: Double, j: State): State = {
       val prob = matrix(i)(j)
-      if(u < acc + prob) j else aux(u, acc + prob, j+1)
+      if (u < acc + prob) j else aux(u, acc + prob, j + 1)
     }
     aux(rand.nextDouble(), 0.0, 0)
   }
 
   override def toString: String = {
-    val lines: Vector[String] = matrix.m.map(x => x.mkString("[",", ","]"))
+    val lines: Vector[String] = matrix.m.map(x => x.mkString("[", ", ", "]"))
     lines.mkString("[", ", ", "]")
   }
 }
@@ -37,7 +37,7 @@ class DenseMarkovChain(val matrix: RowNormMatrix) {
  * Helper functions and random value generation for [[DenseMarkovChain]].
  */
 object DenseMarkovChain {
-   /**
+  /**
    * Factory method for [[DenseMarkovChain]].
    * @param m A square [[Matrix]]
    * @return A Markov Chain defined by `m`

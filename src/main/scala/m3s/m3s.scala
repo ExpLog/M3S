@@ -41,7 +41,7 @@ package object m3s {
    */
   implicit def fileToMatrix(s: String): Matrix = {
     val lines: Iterator[String] = scala.io.Source.fromFile(s).getLines()
-    val m: Matrix = (for( l <- lines ) yield l.split(" ").map(x => x.toDouble).toVector).toVector
+    val m: Matrix = (for (l <- lines) yield l.split(" ").map(x => x.toDouble).toVector).toVector
     m
   }
 
@@ -51,9 +51,9 @@ package object m3s {
    * @return Row-normalized matrix
    */
   def rowNorm(m: Matrix): Matrix =
-    for( l <- m ) yield {
+    for (l <- m) yield {
       val norm = l.sum
-      l.map( x => x/norm)
+      l.map(x => x / norm)
     }
 
   /**
@@ -66,7 +66,7 @@ package object m3s {
 
     def apply(i: Int, j: Int): Double = m(i)(j)
 
-    def length : Int = m.length
+    def length: Int = m.length
 
     override def toString: String = m.toString()
   }
@@ -79,8 +79,10 @@ package object m3s {
   implicit def matrixToRowNormMatrix(mtx: Matrix) = {
     require(mtx.forall(l => l.length == mtx.length),
       "RowNormMatrix: matrix isn't square")
-    require(mtx.forall(x => x.forall( y => y >= 0 )), "RowNormMatrix: negative value in matrix")
+    require(mtx.forall(x => x.forall(y => y >= 0)), "RowNormMatrix: negative value in matrix")
 
-    new RowNormMatrix{val m: Matrix = rowNorm(mtx)}
+    new RowNormMatrix {
+      val m: Matrix = rowNorm(mtx)
+    }
   }
 }

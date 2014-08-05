@@ -19,7 +19,7 @@ case class ComplexMachine(ms: List[Machine])(val conn: Connector) extends Machin
   require(ms.length > 0, "ComplexMachine: empty list of children machinery")
 
   override def step: ComplexMachine = {
-    val ms2 = for( m <- ms ) yield m.step
+    val ms2 = for (m <- ms) yield m.step
     ComplexMachine(ms2)(conn)
   }
 
@@ -32,25 +32,109 @@ case class ComplexMachine(ms: List[Machine])(val conn: Connector) extends Machin
    * @return
    */
   def mergeWith(that: ComplexMachine)
-               (f: (SimpleMachine, SimpleMachine) => SimpleMachine ): ComplexMachine = {
+               (f: (SimpleMachine, SimpleMachine) => SimpleMachine): ComplexMachine = {
     require(this.conn == that.conn)
-    val zipped: List[(Machine,Machine)] = this.ms zip that.ms
+    val zipped: List[(Machine, Machine)] = this.ms zip that.ms
     val ms2: List[Machine] = zipped map {
-      case (x: SimpleMachine, y: SimpleMachine) => f(x,y)
+      case (x: SimpleMachine, y: SimpleMachine) => f(x, y)
       case (x: ComplexMachine, y: ComplexMachine) => x.mergeWith(y)(f)
     }
 
     new ComplexMachine(ms2)(this.conn)
   }
+
+  override def toString = {
+    val strings = for (machine <- ms) yield machine.toString
+    strings.mkString(s"ComplexMachine(\n\t$conn, $performance\n\t", "\n\t", ")")
+  }
 }
 
 object ComplexMachine {
-  implicit class ComplexMachineSim(m: ComplexMachine) extends CanSim[ComplexMachine] {
-    def step = m.step
+
+  implicit class ComplexMachineSim(cm: ComplexMachine) extends CanSim[ComplexMachine] {
+    def step = cm.step
   }
 
-  def countSM(cm: ComplexMachine): Int = cm.ms.map{
+  def countSM(cm: ComplexMachine): Int = cm.ms.map {
     case m: SimpleMachine => 1
     case m: ComplexMachine => countSM(m)
   }.sum
+
+  class ComplexMachineSpecies(original: ComplexMachine,
+                              mr: Double,
+                              time: Int,
+                              minPerformance: Double,
+                              minReliability: Double,
+                              reliabilityPenalty: Double,
+                              rpCost: Map[RepairPolicy, Double]) extends Species[ComplexMachine] {
+
+    import RepairableSM._
+    import NaturalSelection._
+    import RepairPolicy._
+    import Estimators._
+
+    /**
+     * Used to mutate a single entrance in a List[RepairPolicy]
+     * @param rp
+     * @return
+     */
+    def mutation(rp: RepairPolicy) = {
+      val u = rand.nextDouble()
+      if(u < mr) randomRepairPolicy else rp
+    }
+
+    /**
+     * Used to merge two RepairableSM into one, mutating as necessary.
+     * @param sm1
+     * @param sm2
+     * @return
+     */
+    def mergeSM(sm1: SimpleMachine, sm2: SimpleMachine): RepairableSM = (sm1, sm2) match {
+      case (sm1: RepairableSM, sm2: RepairableSM) =>
+        val mc    = sm1.m
+        val s     = sm1.state
+        val out   = sm1.out
+
+        val rpList  = randomMixListWith(sm1.repairList, sm2.repairList)(mutation)
+        val rpMap   = sm1.repairCost
+
+        new SimpleMachine(mc, s, out) with RepairableSM {
+          val repairList = rpList
+          val repairCost = rpMap
+          val cost = 0.0
+        }
+      case _ => throw new Exception("ComplexMachineSpecies: mergeSM.")
+    }
+
+    //TODO: fix this cost function, something is wrong
+    /**
+     * Sums the total cost of running a ComplexMachine fully equipped with RepairableSM.
+     * @param cm
+     * @return
+     */
+    def sumCost(cm: ComplexMachine): Double = cm.ms.map {
+      case m: RepairableSM => m.cost
+      case m: ComplexMachine => sumCost(m)
+      case _ => throw new Exception("ComplexMachineSpecies: sumCost.")
+    }.sum
+
+    //TODO: decide if mutation should be a method by itself or done inside breeding
+    def spawn = addRepairCM(original, time, rpCost)
+
+    def breed(i1: ComplexMachine, i2: ComplexMachine, mutationRate: Double) =
+      i1.mergeWith(i2)(mergeSM)
+
+    def fitness(i: ComplexMachine) = {
+      val sim = new Simulation(i)
+      val cost = sumCost(i)
+      println(cost)
+
+      val reliability = reliabilityEstimator(sim, time, 0.05){
+        case cm : ComplexMachine => cm.performance > minPerformance
+      }
+
+      val adjustment = if(reliability.mean < minReliability) reliabilityPenalty else 0.0
+      reliability.mean * cost + adjustment
+    }
+  }
 }

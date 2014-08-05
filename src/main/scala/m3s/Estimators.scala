@@ -8,7 +8,7 @@ import scala.math._
  * @param variance Initial variance
  * @param sampleSize Sample size
  */
-class StatisticsAccumulator(val mean: Double, val variance: Double, val sampleSize: Int){
+class StatisticsAccumulator(val mean: Double, val variance: Double, val sampleSize: Int) {
   require(sampleSize >= 2)
 
   /**
@@ -18,12 +18,12 @@ class StatisticsAccumulator(val mean: Double, val variance: Double, val sampleSi
    */
   def update(newSample: Double) = {
     val nextSampleSize = sampleSize + 1
-    val nextMean = mean + (newSample - mean)/nextSampleSize
-    val nextVar = (1.0 - 1.0/sampleSize)*variance + nextSampleSize*(nextMean - mean)*(nextMean - mean)
+    val nextMean = mean + (newSample - mean) / nextSampleSize
+    val nextVar = (1.0 - 1.0 / sampleSize) * variance + nextSampleSize * (nextMean - mean) * (nextMean - mean)
     new StatisticsAccumulator(nextMean, nextVar, nextSampleSize)
   }
 
-  def confidence(sd: Double) = 1.96*sqrt(variance/sampleSize) < sd
+  def confidence(sd: Double) = 1.96 * sqrt(variance / sampleSize) < sd
 }
 
 object Estimators {
@@ -33,23 +33,26 @@ object Estimators {
    * @param time Objective time
    * @param sdev Allowed standard deviation
    * @param p Simulation predicate
-   *@tparam A Simulation type
-   * @return
+   * @tparam A Simulation type
+   * @return StatisticsAccumulator
    */
-  def reliabilityEstimator[A](simulation: Simulation[A], time: Int, sdev: Double)(p: A => Boolean) = {
+  def reliabilityEstimator[A](simulation: Simulation[A],
+                              time: Int,
+                              sdev: Double)
+                             (p: A => Boolean) = {
     val initialSims = List.fill(100)(simulation.runWhile(time)(p))
-    val randomVars = for((obj, t) <- initialSims) yield if(t == time) 1 else 0
-    val mean = randomVars.sum/100.0
-    val variance = (for(xi <- randomVars) yield (xi - mean)*(xi - mean)).sum/99.0
+    val randomVars = for ((obj, t) <- initialSims) yield if (t == time) 1 else 0
+    val mean = randomVars.sum / 100.0
+    val variance = (for (xi <- randomVars) yield (xi - mean) * (xi - mean)).sum / 99.0
 
-    val stats = new StatisticsAccumulator(mean,variance,100)
+    val stats = new StatisticsAccumulator(mean, variance, 100)
 
     def aux(s: StatisticsAccumulator) = {
       stats.confidence(sdev) match {
-        case true   =>  stats.mean
-        case false  =>
+        case true => stats
+        case false =>
           val sim = simulation.runWhile(time)(p)
-          val sample = if(sim._2 == time) 1 else 0
+          val sample = if (sim._2 == time) 1 else 0
           stats.update(sample)
       }
     }

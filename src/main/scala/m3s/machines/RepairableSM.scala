@@ -10,23 +10,40 @@ import RepairPolicy._
  */
 trait RepairableSM extends SimpleMachine {
   val repairList: List[RepairPolicy]
+  val repairCost: Map[RepairPolicy, Double]
+  val cost: Double
 
-  val r = repairList.head match {
-    case DoNothing => 0
-    case MinorRepair => 1
-    case AsGoodAsNew => m.nStates - 1
-  }
+  /*
+  apparently, `var r` cannot be inside the body of
+  the trait, as it will be instantied before repairList is.
+   */
 
   override def step: RepairableSM = {
     val newState = m.transition(state)
-    val afterPolicy = if(newState + r < m.nStates) newState + r else m.nStates - 1
-    val rpl = repairList
+
+    val r = repairList.head match {
+      case DoNothing => 0
+      case MinorRepair => 1
+      case AsGoodAsNew => m.nStates - 1
+    }
+
+    val afterPolicy = if (newState + r < m.nStates) newState + r else m.nStates - 1
     //maybe change rpl.tail to super.repairList.tail
-    new SimpleMachine(m, afterPolicy)(out) with RepairableSM{val repairList = rpl.tail}
+    val newRpList = repairList.tail
+    val newRpCost = repairCost
+    val newCost = cost + repairCost(repairList.head)
+
+    new SimpleMachine(m, afterPolicy, out) with RepairableSM {
+      val repairList = newRpList
+      val repairCost = newRpCost
+      val cost = newCost
+    }
   }
+
+  override def toString = s"RepairableSM($m, $state, $out, $repairList, $repairCost, $cost)"
 }
 
-object RepairableSM{
+object RepairableSM {
   /**
    * Generates a random list of [[RepairPolicy]] of length `n`.
    * @param n List length
@@ -38,24 +55,32 @@ object RepairableSM{
    * Turns a [[machines.SimpleMachine]] into a [[RepairableSM]].
    * @param sm SimpleMachine to be converted
    * @param n Length of repair list
+   * @param rpCost Repair costs for each RepairPolicy
    * @return
    */
-  def randomRepairSM(sm: SimpleMachine, n: Int): RepairableSM =
-    new SimpleMachine(sm.m, sm.state)(sm.out) with RepairableSM{
-      val repairList = spawnRandomRepairList(n)
+  def randomRepairSM(sm: SimpleMachine, n: Int, rpCost: Map[RepairPolicy, Double]): RepairableSM =
+    sm match {
+      case s: RepairableSM => s
+      case SimpleMachine(m, s, out) => new SimpleMachine(m, s, sm.out) with RepairableSM {
+        val repairList = spawnRandomRepairList(n)
+        val repairCost = rpCost
+        val cost = 0.0
+      }
     }
+
 
   /**
    * Turns every [[machines.SimpleMachine]] inside a [[machines.ComplexMachine]]
    * into a [[RepairableSM]].
    * @param cm ComplexMachine to be converted
    * @param n Length of repair lists.
+   * @param rpCost Repair costs for each RepairPolicy
    * @return
    */
-  def addRepairCM(cm: ComplexMachine, n: Int): ComplexMachine = {
-    val ms2 = for(m <- cm.ms) yield m match {
-      case m: SimpleMachine => randomRepairSM(m,n)
-      case m: ComplexMachine => addRepairCM(m,n)
+  def addRepairCM(cm: ComplexMachine, n: Int, rpCost: Map[RepairPolicy, Double]): ComplexMachine = {
+    val ms2 = for (m <- cm.ms) yield m match {
+      case m: SimpleMachine => randomRepairSM(m, n, rpCost)
+      case m: ComplexMachine => addRepairCM(m, n, rpCost)
     }
     ComplexMachine(ms2)(cm.conn)
   }

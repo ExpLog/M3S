@@ -59,7 +59,7 @@ object Generators {
     Gen.lzy(oneOf(simpleMachine, complexMachine))
 
   def simpleMachine: Gen[SimpleMachine] =
-    for(mc <- markovChain; i <- choose[Int](0,mc.nStates-1)) yield SimpleMachine(mc,i)(LinearOutput(1.0, 0.0))
+    for(mc <- markovChain; i <- choose[Int](0,mc.nStates-1)) yield SimpleMachine(mc,i,LinearOutput(1.0, 0.0))
 
   def complexMachine: Gen[ComplexMachine] = Gen.lzy{
     for{
