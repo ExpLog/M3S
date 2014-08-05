@@ -1,7 +1,7 @@
 import m3s.machines.connectors.Parallel
+import optimization.CanSim
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{Matchers, FlatSpec}
-import m3s.CanSim
 import m3s.machines._
 import m3s.machines.ComplexMachine._
 import Generators._

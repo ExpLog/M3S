@@ -2,6 +2,7 @@ package m3s.markov
 
 import scala.language.implicitConversions
 import m3s._
+import scala.annotation.tailrec
 
 /**
  * A Markov Chain represented by a transition matrix.
@@ -20,6 +21,7 @@ class DenseMarkovChain(val matrix: RowNormMatrix) {
    * @return Next state of the chain.
    */
   def transition(i: State): State = {
+    @tailrec
     def aux(u: Double, acc: Double, j: State): State = {
       val prob = matrix(i)(j)
       if (u < acc + prob) j else aux(u, acc + prob, j + 1)

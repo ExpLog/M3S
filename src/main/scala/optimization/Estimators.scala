@@ -1,4 +1,4 @@
-package m3s
+package optimization
 
 import scala.math._
 
@@ -49,13 +49,13 @@ object Estimators {
 
     val stats = new StatisticsAccumulator(mean, variance, 100)
 
-    def aux(s: StatisticsAccumulator) = {
+    def aux(s: StatisticsAccumulator): StatisticsAccumulator = {
       stats.confidence(sdev) match {
         case true => stats
         case false =>
           val sim = simulation.runWhile(time)(p)
           val sample = if (sim._2 == time) 1 else 0
-          stats.update(sample)
+          aux(stats.update(sample))
       }
     }
 

@@ -1,5 +1,5 @@
-import m3s.CanSim
 import m3s.machines.output.LinearOutput
+import optimization.CanSim
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FlatSpec, Matchers}
 import m3s.machines.SimpleMachine

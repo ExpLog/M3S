@@ -1,4 +1,6 @@
-package m3s
+package m3s.machines
+
+import m3s._
 
 sealed trait RepairPolicy
 

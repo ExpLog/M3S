@@ -1,4 +1,6 @@
-package m3s
+package optimization
+
+import m3s._
 
 trait Species[A] {
   //TODO: decide if mutation should be a method by itself or done inside breeding
@@ -46,7 +48,7 @@ class NaturalSelection[A](origin: Species[A]) {
    * @return
    */
   def rank(pop: List[A]): List[RankedIndividual] =
-    pop.map{ case x => (x, origin.fitness(x))}.sortBy(_._2).reverse
+    pop.map { case x => (x, origin.fitness(x))}.sortBy(_._2).reverse
 
 
   //TODO: remove this function?
@@ -97,7 +99,7 @@ class NaturalSelection[A](origin: Species[A]) {
     //require(popSize > 0)
 
     def aux(pop: List[A], best: RankedIndividual, loop: Int): RankedIndividual = {
-      println(s"Generation ${maxGen-loop}")
+      println(s"Generation ${maxGen - loop}")
       if (loop == 0) best
       else {
         val rankedPop = rank(pop)
@@ -138,7 +140,7 @@ object NaturalSelection {
   def choose[A](list: List[(A, Double)]): A = {
     def aux(u: Double, acc: Double, auxList: List[(A, Double)]): A = {
       val prob = auxList.head._2
-//      println(auxList.length, prob)
+      //      println(auxList.length, prob)
       if (u < acc + prob) auxList.head._1 else aux(u, acc + prob, auxList.tail)
     }
     val r = rand.nextDouble()

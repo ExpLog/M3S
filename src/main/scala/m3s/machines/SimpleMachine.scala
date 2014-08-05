@@ -3,6 +3,7 @@ package m3s.machines
 import m3s._
 import m3s.machines.output.Output
 import m3s.markov.DenseMarkovChain
+import optimization.CanSim
 
 /**
  * A [[SimpleMachine]] is composed of a [[DenseMarkovChain]] and a state.

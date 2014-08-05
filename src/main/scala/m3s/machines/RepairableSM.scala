@@ -4,6 +4,7 @@ import m3s._
 import RepairPolicy._
 import RepairableSM._
 
+
 /**
  * It is a repair schedule for a [[m3s.machines.SimpleMachine]].
  * Has to be mixed in with a SimpleMachine.
@@ -22,7 +23,7 @@ trait RepairableSM extends SimpleMachine {
   override def step: RepairableSM = {
     val newState = m.transition(state)
 
-    val r = repairValue(repairList.head, m.nStates-1)
+    val r = repairValue(repairList.head, m.nStates - 1)
 
     val afterPolicy = if (newState + r < m.nStates) newState + r else m.nStates - 1 //need to change this to a max
     //maybe change rpl.tail to super.repairList.tail
@@ -82,6 +83,7 @@ object RepairableSM {
    * @param rpCost Repair costs for each RepairPolicy
    * @return
    */
+  //TODO: change this so it can have @tailrec
   def addRepairCM(cm: ComplexMachine, n: Int, rpCost: Map[RepairPolicy, Double]): ComplexMachine = {
     val ms2 = for (m <- cm.ms) yield m match {
       case m: SimpleMachine => randomRepairSM(m, n, rpCost)

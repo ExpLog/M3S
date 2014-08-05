@@ -1,4 +1,4 @@
-package m3s
+package optimization
 
 /**
  * Needs to be extended to provide evidence that a class can be simulated.
@@ -41,9 +41,9 @@ class Simulation[A <% CanSim[A]](simObj: A) {
   def runWhile(t: Int)(f: A => Boolean): (A, Int) = {
     def aux(obj: A, ti: Int): (A, Int) = ti < t match {
       case true => f(obj) match {
-          case true => aux(obj.step, ti + 1)
-          case false => (obj, ti)
-        }
+        case true => aux(obj.step, ti + 1)
+        case false => (obj, ti)
+      }
       case false => (obj, ti)
     }
 

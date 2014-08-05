@@ -1,10 +1,14 @@
 package m3s
 
-import m3s.machines.{RepairableSM, ComplexMachine, SimpleMachine}
+import m3s.machines._
 import m3s.machines.connectors.{Series, Parallel}
 import m3s.machines.ComplexMachine._
-import m3s.machines.output.LinearOutput
+
+//import m3s.machines.output.LinearOutput
+
 import m3s.machines.RepairableSM._
+import optimization._
+import m3s.machines.output.LinearOutput
 
 
 object MainTest extends App {
@@ -67,23 +71,29 @@ object MainTest extends App {
   println(rpsm.step)
   //shows if rpsm is a RepairableSM
   val rpsmEQUAL = randomRepairSM(rpsm, 8, rpMap)
-  println(rpsmEQUAL) //shows if the rpsm stayed the same
+  println(rpsmEQUAL)
+  //shows if the rpsm stayed the same
   val rpcm = addRepairCM(cm1, 2, rpMap)
   println(rpcm)
 
   //  testing NaturalSelection
-  val cmSpecies = new ComplexMachineSpecies(cm1, 0.05, 100, 10.0, 0.50, rpMap)
+  val cmSpecies = new ComplexMachineSpecies(cm1, 0.05, 100, 15.0, 0.50, rpMap)
   val ga = new NaturalSelection(cmSpecies)
-  val best = ga.run(100, 500, 0.6, 0.1)
+  val best = ga.run(50, 100, 0.6, 0.1)
   println(best)
 
-  def totalCost(cm: ComplexMachine): Double = cm.ms.map{
+  def totalCost(cm: ComplexMachine): Double = cm.ms.map {
     case m: RepairableSM => m.totalRepairCost
     case m: ComplexMachine => totalCost(m)
     case _ => throw new Exception("ComplexMachineSpecies: sumCost.")
   }.sum
 
   val bestSim = new Simulation(best._1)
-  println(bestSim.runWhile(100)(_.performance > 10.0))
+  println(bestSim.runWhile(100)(_.performance > 15.0))
   println(totalCost(best._1))
+
+  import Estimators._
+
+  val stats = reliabilityEstimator(bestSim, 100, 0.05)(_.performance > 0.05)
+  println(stats)
 }
