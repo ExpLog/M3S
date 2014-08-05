@@ -45,10 +45,9 @@ class NaturalSelection[A](origin: Species[A]) {
    * @param pop List of individuals
    * @return
    */
-  def rank(pop: List[A]): List[RankedIndividual] = {
-    println(pop.head, origin.fitness(pop.head))
+  def rank(pop: List[A]): List[RankedIndividual] =
     pop.map{ case x => (x, origin.fitness(x))}.sortBy(_._2).reverse
-  }
+
 
   //TODO: remove this function?
   /**
@@ -98,6 +97,7 @@ class NaturalSelection[A](origin: Species[A]) {
     //require(popSize > 0)
 
     def aux(pop: List[A], best: RankedIndividual, loop: Int): A = {
+      println(s"Generation ${maxGen-loop}")
       if (loop == 0) best._1
       else {
         val rankedPop = rank(pop)

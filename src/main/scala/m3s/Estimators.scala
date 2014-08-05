@@ -24,6 +24,8 @@ class StatisticsAccumulator(val mean: Double, val variance: Double, val sampleSi
   }
 
   def confidence(sd: Double) = 1.96 * sqrt(variance / sampleSize) < sd
+
+  override def toString = s"StatisticsAccumulator($mean, $variance, $sampleSize)"
 }
 
 object Estimators {

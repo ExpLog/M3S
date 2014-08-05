@@ -19,7 +19,9 @@ object MainTest extends App {
   println("cm1 has " + countSM(cm1) + " sms.")
 
   //testing runWhile
-  val g: ComplexMachine => Boolean = {case c: ComplexMachine => c.performance > 10.0}
+  val g: ComplexMachine => Boolean = {
+    case c: ComplexMachine => c.performance > 10.0
+  }
   println(sim1.runWhile(100)(g))
 
   //testing bigger simulations
@@ -58,22 +60,30 @@ object MainTest extends App {
   println(repairList4)
 
   //testing add repairs
-  val rpMap: Map[RepairPolicy, Double] = Map(DoNothing -> 0.0, MinorRepair -> 100.0, AsGoodAsNew -> 220.0)
+  val rpMap: Map[RepairPolicy, Double] = Map(DoNothing -> 0.1, MinorRepair -> 100.0, AsGoodAsNew -> 220.0)
   println(rpMap(DoNothing), rpMap(MinorRepair), rpMap(AsGoodAsNew))
   val rpsm = randomRepairSM(sm1, 8, rpMap)
   println(rpsm)
+  println(rpsm.step)
   //shows if rpsm is a RepairableSM
   val rpsmEQUAL = randomRepairSM(rpsm, 8, rpMap)
   println(rpsmEQUAL) //shows if the rpsm stayed the same
-  println(rpsm == rpsmEQUAL, rpsm == sm1, rpsm == cm1)
-  //just to check if I get free equality
-
   val rpcm = addRepairCM(cm1, 2, rpMap)
   println(rpcm)
 
-  //testing NaturalSelection
-  val cmSpecies = new ComplexMachineSpecies(cm1,0.01,35,10.0,0.85,-100,rpMap)
+  //  testing NaturalSelection
+  val cmSpecies = new ComplexMachineSpecies(cm1, 0.05, 100, 10.0, 0.85, rpMap)
   val ga = new NaturalSelection(cmSpecies)
-  val best: ComplexMachine = ga.run(100, 100, 0.4, 0.1)
+  val best: ComplexMachine = ga.run(50, 100, 0.4, 0.1)
   println(best)
+
+  def totalCost(cm: ComplexMachine): Double = cm.ms.map{
+    case m: RepairableSM => m.totalRepairCost
+    case m: ComplexMachine => totalCost(m)
+    case _ => throw new Exception("ComplexMachineSpecies: sumCost.")
+  }.sum
+
+  val bestSim = new Simulation(best)
+  println(bestSim.runWhile(100)(_.performance > 10.0))
+  println(totalCost(best))
 }

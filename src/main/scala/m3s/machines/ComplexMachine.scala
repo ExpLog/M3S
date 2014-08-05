@@ -65,13 +65,14 @@ object ComplexMachine {
                               time: Int,
                               minPerformance: Double,
                               minReliability: Double,
-                              reliabilityPenalty: Double,
                               rpCost: Map[RepairPolicy, Double]) extends Species[ComplexMachine] {
 
     import RepairableSM._
     import NaturalSelection._
     import RepairPolicy._
     import Estimators._
+
+    val avgCost: Double = rpCost.foldLeft(0.0)(_+_._2)/rpCost.size
 
     /**
      * Used to mutate a single entrance in a List[RepairPolicy]
@@ -106,15 +107,14 @@ object ComplexMachine {
       case _ => throw new Exception("ComplexMachineSpecies: mergeSM.")
     }
 
-    //TODO: fix this cost function, something is wrong
     /**
-     * Sums the total cost of running a ComplexMachine fully equipped with RepairableSM.
+     * Sums the total repair cost of a repair schedule in a ComplexMachine
      * @param cm
      * @return
      */
-    def sumCost(cm: ComplexMachine): Double = cm.ms.map {
-      case m: RepairableSM => m.cost
-      case m: ComplexMachine => sumCost(m)
+    def totalCost(cm: ComplexMachine): Double = cm.ms.map{
+      case m: RepairableSM => m.totalRepairCost
+      case m: ComplexMachine => totalCost(m)
       case _ => throw new Exception("ComplexMachineSpecies: sumCost.")
     }.sum
 
@@ -126,15 +126,14 @@ object ComplexMachine {
 
     def fitness(i: ComplexMachine) = {
       val sim = new Simulation(i)
-      val cost = sumCost(i)
-      println(cost)
+      val cost = totalCost(i)
+//      println(cost)
 
       val reliability = reliabilityEstimator(sim, time, 0.05){
         case cm : ComplexMachine => cm.performance > minPerformance
       }
 
-      val adjustment = if(reliability.mean < minReliability) reliabilityPenalty else 0.0
-      reliability.mean * cost + adjustment
+      (reliability.mean - minReliability)*time*avgCost/cost
     }
   }
 }

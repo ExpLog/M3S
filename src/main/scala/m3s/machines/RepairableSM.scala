@@ -2,6 +2,7 @@ package m3s.machines
 
 import m3s._
 import RepairPolicy._
+import RepairableSM._
 
 /**
  * It is a repair schedule for a [[m3s.machines.SimpleMachine]].
@@ -21,13 +22,9 @@ trait RepairableSM extends SimpleMachine {
   override def step: RepairableSM = {
     val newState = m.transition(state)
 
-    val r = repairList.head match {
-      case DoNothing => 0
-      case MinorRepair => 1
-      case AsGoodAsNew => m.nStates - 1
-    }
+    val r = repairValue(repairList.head, m.nStates-1)
 
-    val afterPolicy = if (newState + r < m.nStates) newState + r else m.nStates - 1
+    val afterPolicy = if (newState + r < m.nStates) newState + r else m.nStates - 1 //need to change this to a max
     //maybe change rpl.tail to super.repairList.tail
     val newRpList = repairList.tail
     val newRpCost = repairCost
@@ -40,10 +37,18 @@ trait RepairableSM extends SimpleMachine {
     }
   }
 
+  def totalRepairCost: Double = repairList.map(repairCost(_)).sum
+
   override def toString = s"RepairableSM($m, $state, $out, $repairList, $repairCost, $cost)"
 }
 
 object RepairableSM {
+  def repairValue(rp: RepairPolicy, n: Int) = rp match {
+    case DoNothing => 0
+    case MinorRepair => 1
+    case AsGoodAsNew => n
+  }
+
   /**
    * Generates a random list of [[RepairPolicy]] of length `n`.
    * @param n List length
