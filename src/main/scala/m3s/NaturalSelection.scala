@@ -93,12 +93,12 @@ class NaturalSelection[A](origin: Species[A]) {
   def run(popSize: Int,
           maxGen: Int,
           cullRate: Double,
-          mutationRate: Double): A = {
+          mutationRate: Double): RankedIndividual = {
     //require(popSize > 0)
 
-    def aux(pop: List[A], best: RankedIndividual, loop: Int): A = {
+    def aux(pop: List[A], best: RankedIndividual, loop: Int): RankedIndividual = {
       println(s"Generation ${maxGen-loop}")
-      if (loop == 0) best._1
+      if (loop == 0) best
       else {
         val rankedPop = rank(pop)
         val bestIndividual = rankedPop.head

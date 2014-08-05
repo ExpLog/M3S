@@ -72,9 +72,9 @@ object MainTest extends App {
   println(rpcm)
 
   //  testing NaturalSelection
-  val cmSpecies = new ComplexMachineSpecies(cm1, 0.05, 100, 10.0, 0.85, rpMap)
+  val cmSpecies = new ComplexMachineSpecies(cm1, 0.05, 100, 10.0, 0.50, rpMap)
   val ga = new NaturalSelection(cmSpecies)
-  val best: ComplexMachine = ga.run(50, 100, 0.4, 0.1)
+  val best = ga.run(100, 500, 0.6, 0.1)
   println(best)
 
   def totalCost(cm: ComplexMachine): Double = cm.ms.map{
@@ -83,7 +83,7 @@ object MainTest extends App {
     case _ => throw new Exception("ComplexMachineSpecies: sumCost.")
   }.sum
 
-  val bestSim = new Simulation(best)
+  val bestSim = new Simulation(best._1)
   println(bestSim.runWhile(100)(_.performance > 10.0))
-  println(totalCost(best))
+  println(totalCost(best._1))
 }
