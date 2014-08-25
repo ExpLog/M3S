@@ -20,6 +20,17 @@ object Generators {
   def vectorOfN[T](n: Int, g: => Gen[T]) = containerOfN[Vector,T](n,g)
 
   /**
+   * Generates a vector of random size between 1 and 10.
+   * @param g Generator of T
+   * @tparam T Type of vector to be generated
+   * @return Gen[ Vector[T] ]
+   */
+  def vector[T](g: => Gen[T]): Gen[Vector[T]] =
+    for(i <- choose[Int](1,10); vec <- vectorOfN(i,g)) yield vec
+
+  def doubleVector: Gen[Vector[Double]] = vector(choose[Double](0,10))
+
+  /**
    * Generates a square matrix of size n.
    * @param n Desired matrix dimension.
    * @return

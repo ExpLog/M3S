@@ -30,8 +30,8 @@ class DenseMarkovChain(val matrix: RowNormMatrix) {
   }
 
   override def toString: String = {
-    val lines: Vector[String] = matrix.m.map(x => x.mkString("[", ", ", "]"))
-    lines.mkString("[", ", ", "]")
+    val lines: Vector[String] = matrix.m.map(x => x.mkString("Row(", ",", ")"))
+    lines.mkString("MarkovChain(", ", ", ")")
   }
 }
 

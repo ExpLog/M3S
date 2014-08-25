@@ -74,6 +74,16 @@ object RepairableSM {
       }
     }
 
+  /**
+   * Sums the total repair cost of a repair schedule in a ComplexMachine
+   * @param cm
+   * @return
+   */
+  def totalCost(cm: ComplexMachine): Double = cm.ms.map {
+    case m: RepairableSM => m.totalRepairCost
+    case m: ComplexMachine => totalCost(m)
+    case _ => throw new Exception("ComplexMachineSpecies: sumCost.")
+  }.sum
 
   /**
    * Turns every [[machines.SimpleMachine]] inside a [[machines.ComplexMachine]]

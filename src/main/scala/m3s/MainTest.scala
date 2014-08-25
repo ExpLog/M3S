@@ -1,14 +1,15 @@
 package m3s
 
 import m3s.machines._
-import m3s.machines.connectors.{Series, Parallel}
+import m3s.machines.connectors._
+import m3s.machines.output._
 import m3s.machines.ComplexMachine._
-
-//import m3s.machines.output.LinearOutput
-
 import m3s.machines.RepairableSM._
+
+import m3s.markov.DenseMarkovChain
 import optimization._
-import m3s.machines.output.LinearOutput
+
+import m3s.parsers._
 
 
 object MainTest extends App {
@@ -43,10 +44,10 @@ object MainTest extends App {
   val f: (SimpleMachine, SimpleMachine) => SimpleMachine = {
     case (a: SimpleMachine, b) =>
       require(a.out == b.out)
-      new SimpleMachine(a.m, List(a.state, b.state).max - 1, a.out)
+      SimpleMachine(a.m, List(a.state, b.state).max - 1, a.out)
   }
   val lm1 = List.fill(2)(new SimpleMachine(matrix, output))
-  val lm2 = List.fill(2)(new SimpleMachine(matrix, 0, output))
+  val lm2 = List.fill(2)(SimpleMachine(matrix, 0, output))
   val cm3 = new ComplexMachine(lm1)(Parallel)
   val cm4 = new ComplexMachine(lm2)(Parallel)
   val cm5 = cm3.mergeWith(cm4)(f)
@@ -79,14 +80,8 @@ object MainTest extends App {
   //  testing NaturalSelection
   val cmSpecies = new ComplexMachineSpecies(cm1, 0.05, 100, 15.0, 0.50, rpMap)
   val ga = new NaturalSelection(cmSpecies)
-  val best = ga.run(50, 100, 0.6, 0.1)
+  val best = ga.run(1, 1, 0.6, 0.1)
   println(best)
-
-  def totalCost(cm: ComplexMachine): Double = cm.ms.map {
-    case m: RepairableSM => m.totalRepairCost
-    case m: ComplexMachine => totalCost(m)
-    case _ => throw new Exception("ComplexMachineSpecies: sumCost.")
-  }.sum
 
   val bestSim = new Simulation(best._1)
   println(bestSim.runWhile(100)(_.performance > 15.0))
@@ -96,4 +91,32 @@ object MainTest extends App {
 
   val stats = reliabilityEstimator(bestSim, 100, 0.05)(_.performance > 0.05)
   println(stats)
+}
+
+object ParserMain extends App with M3SParsers with OutputParsers {
+
+  //vector parser test
+  val vector = Vector(1.0, 2.0, 3.0, -1.0, 0)
+  println(parse(vectorDoubleParser, vector toString()))
+  val vector2 = parse(vectorDoubleParser, vector toString()).get
+  println(vector.sum == vector2.sum)
+
+  //matrix parser test
+  val matrix: Matrix = Vector(Vector(1, 0, 0), Vector(0.2, 0.8, 0), Vector(0, 0.1, 0.9))
+  println(parse(matrixParser, matrix toString()))
+
+  //markov chain parser test
+  val mc = new DenseMarkovChain(matrix)
+  println(parse(denseMarkovChainParser, mc toString()))
+
+  //output parsers test
+  val lo = LinearOutput(-1.0, 3.93)
+  val qo = QuadraticOutput(-3, 851283.0321, +100.1)
+
+  println(parse(linearOutputParser, lo.toString))
+  println(parse(quadraticOutputParser, qo.toString))
+  println(parse(outputParser, lo.toString))
+  println(parse(outputParser, qo.toString))
+
+  //connector parsers
 }

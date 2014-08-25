@@ -1,7 +1,7 @@
 package optimization
 
 import m3s._
-import m3s.machines.{RepairPolicy, SimpleMachine, RepairableSM, ComplexMachine}
+import m3s.machines._
 import RepairPolicy._
 import m3s.machines.RepairableSM._
 import Estimators._
@@ -49,16 +49,7 @@ class ComplexMachineSpecies(original: ComplexMachine,
     case _ => throw new Exception("ComplexMachineSpecies: mergeSM.")
   }
 
-  /**
-   * Sums the total repair cost of a repair schedule in a ComplexMachine
-   * @param cm
-   * @return
-   */
-  def totalCost(cm: ComplexMachine): Double = cm.ms.map {
-    case m: RepairableSM => m.totalRepairCost
-    case m: ComplexMachine => totalCost(m)
-    case _ => throw new Exception("ComplexMachineSpecies: sumCost.")
-  }.sum
+
 
   //TODO: decide if mutation should be a method by itself or done inside breeding
   def spawn = addRepairCM(original, time, rpCost)

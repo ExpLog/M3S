@@ -6,4 +6,6 @@ case object Parallel extends Connector {
   def structure(lm: List[Machine]) = {
     lm.foldLeft(0.0) { case (carry, m) => carry + m.performance}
   }
+
+  override def toString = "ParallelConnector"
 }
