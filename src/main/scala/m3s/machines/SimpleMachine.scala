@@ -16,7 +16,7 @@ case class SimpleMachine(m: DenseMarkovChain, state: State, out: Output) extends
 
   def this(mc: DenseMarkovChain, out: Output) = this(mc, mc.nStates - 1, out)
 
-  override def step: SimpleMachine = SimpleMachine(m, m.transition(state), out)
+  override def step: SimpleMachine = new SimpleMachine(m, m.transition(state), out)
 
   override def performance = out(state)
 

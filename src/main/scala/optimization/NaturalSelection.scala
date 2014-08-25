@@ -60,7 +60,7 @@ class NaturalSelection[A](origin: Species[A]) {
    */
   def cull[B](list: List[B], perc: Double) = {
     //    require(perc >= 0.0 && perc <= 1.0)
-    val n = (1 - perc) * list.length
+    val n = math.max((1 - perc) * list.length, 1.0)
     list take n.toInt
   }
 
@@ -144,6 +144,7 @@ object NaturalSelection {
       if (u < acc + prob) auxList.head._1 else aux(u, acc + prob, auxList.tail)
     }
     val r = rand.nextDouble()
+
     aux(r, 0.0, list)
   }
 
