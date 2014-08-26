@@ -3,11 +3,11 @@ package m3s.parsers
 import scala.util.parsing.combinator.JavaTokenParsers
 import m3s.machines._
 
-trait MachineParser extends JavaTokenParsers
-with M3SParsers
-with ConnectorParsers
-with OutputParsers
-with RepairParsers {
+trait MachineParsers extends JavaTokenParsers
+                    with M3SParsers
+                    with ConnectorParsers
+                    with OutputParsers
+                    with RepairParsers {
 
   def simpleMachineParser: Parser[SimpleMachine] =
     "SimpleMachine(" ~> {

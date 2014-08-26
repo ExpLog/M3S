@@ -94,7 +94,7 @@ object MainTest extends App {
 }
 
 object ParserMain extends App with M3SParsers with OutputParsers with RepairParsers
-  with ConnectorParsers with MachineParser {
+  with ConnectorParsers with MachineParsers {
 
   //vector parser test
   val vector = Vector(1.0, 2.0, 3.0, -1.0, 0)
