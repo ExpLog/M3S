@@ -47,7 +47,7 @@ case class ComplexMachine(ms: List[Machine])(val conn: Connector) extends Machin
 
   override def toString = {
     val strings = for (machine <- ms) yield machine.toString
-    strings.mkString(s"ComplexMachine(\n\t$conn, $performance\n\t", "\n\t", ")")
+    strings.mkString(s"ComplexMachine(\n\t$conn, $performance,\n\t", ",\n\t", ")")
   }
 }
 
@@ -60,6 +60,4 @@ object ComplexMachine {
     case m: SimpleMachine => 1
     case m: ComplexMachine => countSM(m)
   }.sum
-
-
 }

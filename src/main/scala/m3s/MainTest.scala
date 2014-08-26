@@ -93,7 +93,8 @@ object MainTest extends App {
   println(stats)
 }
 
-object ParserMain extends App with M3SParsers with OutputParsers {
+object ParserMain extends App with M3SParsers with OutputParsers with RepairParsers
+  with ConnectorParsers with MachineParser {
 
   //vector parser test
   val vector = Vector(1.0, 2.0, 3.0, -1.0, 0)
@@ -119,4 +120,36 @@ object ParserMain extends App with M3SParsers with OutputParsers {
   println(parse(outputParser, qo.toString))
 
   //connector parsers
+  println(parse(connectorParser, Series.toString))
+  println(parse(connectorParser, Parallel.toString))
+
+  //repair parsers
+  val rplist1 =  List(DoNothing, AsGoodAsNew)
+  val rplist2 =  List()
+  println(parse(rpListParser, rplist1.toString()))
+  println(parse(rpListParser, rplist2.toString()))
+
+  val map: Map[RepairPolicy, Double] = Map(DoNothing -> -1.01, MinorRepair -> 3.102, AsGoodAsNew -> 0)
+  println(parse(mapRpDoubleParser, map.toString()))
+
+  //machine parsers
+  val sm1 = new SimpleMachine(mc, LinearOutput(1.0, 0.0))
+  println(parse(simpleMachineParser, sm1.toString))
+
+  val smList1 = List.fill(5)(sm1)
+  val cm1 = new ComplexMachine(smList1)(Series)
+  println(parse(complexMachineParser, cm1.toString))
+
+  val cm2 = new ComplexMachine(cm1 :: smList1)(Parallel)
+  println(parse(complexMachineParser, cm2.toString))
+
+  val rpsm1 = randomRepairSM(sm1, 3, map)
+  println(parse(repairableSMParser, rpsm1.toString))
+
+  val cm3 = addRepairCM(cm1, 3, map)
+
+  println(parse(machineParser, sm1.toString))
+  println(parse(machineParser, cm1.toString))
+  println(parse(machineParser, rpsm1.toString))
+  println(parse(machineParser, cm3.toString))
 }

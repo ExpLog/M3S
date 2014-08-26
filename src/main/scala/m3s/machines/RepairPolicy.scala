@@ -5,9 +5,7 @@ import m3s._
 sealed trait RepairPolicy
 
 case object DoNothing extends RepairPolicy
-
 case object MinorRepair extends RepairPolicy
-
 case object AsGoodAsNew extends RepairPolicy
 
 object RepairPolicy {

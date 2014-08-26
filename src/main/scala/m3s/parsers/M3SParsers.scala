@@ -10,8 +10,8 @@ trait M3SParsers extends JavaTokenParsers {
    * @return
    */
   def vectorDoubleParser: Parser[Vector[Double]] =
-    "Vector(" ~> floatingPointNumber ~ rep("," ~> floatingPointNumber) <~ ")" ^^ {
-      case d ~ lst => {d.toDouble :: lst.map{x => x.toDouble}}.toVector
+    "Vector(" ~> repsep(floatingPointNumber, ",") <~ ")" ^^ {
+      case lst => lst.map{x => x.toDouble}.toVector
     }
 
   /**
@@ -19,8 +19,8 @@ trait M3SParsers extends JavaTokenParsers {
    * @return
    */
   def matrixParser: Parser[Matrix] =
-    "Vector(" ~> vectorDoubleParser ~ rep("," ~> vectorDoubleParser) <~ ")" ^^ {
-      case vec ~ lst => {vec :: lst}.toVector
+    "Vector(" ~> repsep(vectorDoubleParser, ",") <~ ")" ^^ {
+      case lst => lst.toVector
     }
 
   /**
@@ -28,18 +28,28 @@ trait M3SParsers extends JavaTokenParsers {
    * @return
    */
   def rowParser: Parser[Vector[Double]] =
-    "Row(" ~> floatingPointNumber ~ rep("," ~> floatingPointNumber) <~ ")" ^^ {
-      case d ~ lst => {d.toDouble :: lst.map{x => x.toDouble}}.toVector
+    "Row(" ~> repsep(floatingPointNumber, ",") <~ ")" ^^ {
+      case lst => lst.map{x => x.toDouble}.toVector
     }
+
+  def rowParser2: Parser[Vector[Double]] = "Row(" ~> repsep(floatingPointNumber, ",") <~ ")" ^^ {
+    case lst => lst.map(x => x.toDouble).toVector
+  }
 
   /**
    * Parser for [[DenseMarkovChain]].
    * @return
    */
   def denseMarkovChainParser: Parser[DenseMarkovChain] =
-    "MarkovChain(" ~> rowParser ~ rep("," ~> rowParser) <~ ")" ^^ {
-      case vec ~ lstVec =>
-        val matrix = {vec :: lstVec}.toVector
+    "MarkovChain(" ~> repsep(rowParser, ",") <~ ")" ^^ {
+      case lstVec =>
+        val matrix = lstVec.toVector
         new DenseMarkovChain(matrix)
     }
+
+  /**
+   * Placeholder parser for when [[m3s.markov.DenseMarkovChain]] extends [[m3s.markov.MarkovChain]].
+   * @return
+   */
+  def markovChainParser: Parser[DenseMarkovChain] = denseMarkovChainParser
 }
