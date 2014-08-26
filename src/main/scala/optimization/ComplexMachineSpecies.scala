@@ -58,9 +58,10 @@ class ComplexMachineSpecies(original: ComplexMachine,
     i1.mergeWith(i2)(mergeSM)
 
   def fitness(i: ComplexMachine) = {
+    //TODO: there is an infinite loop here.
+
     val sim = new Simulation(i)
     val cost = totalCost(i)
-    //      println(cost)
 
     val reliability = reliabilityEstimator(sim, time, 0.05) {
       case cm: ComplexMachine => cm.performance > minPerformance

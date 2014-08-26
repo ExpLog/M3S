@@ -2,6 +2,8 @@ package optimization
 
 import scala.math._
 
+//TODO: take a better look at this, something might still be wrong
+
 /**
  * Accumulates simple statistics.
  * @param mean Initial mean
@@ -42,20 +44,21 @@ object Estimators {
                               time: Int,
                               sdev: Double)
                              (p: A => Boolean) = {
-    val initialSims = List.fill(100)(simulation.runWhile(time)(p))
+    val initialSims = List.fill(10)(simulation.runWhile(time)(p))
     val randomVars = for ((obj, t) <- initialSims) yield if (t == time) 1 else 0
-    val mean = randomVars.sum / 100.0
-    val variance = (for (xi <- randomVars) yield (xi - mean) * (xi - mean)).sum / 99.0
+    val mean = randomVars.sum / 10.0
+    val variance = (for (xi <- randomVars) yield (xi - mean) * (xi - mean)).sum / 9.0
 
-    val stats = new StatisticsAccumulator(mean, variance, 100)
+    val stats = new StatisticsAccumulator(mean, variance, 10)
 
     def aux(s: StatisticsAccumulator): StatisticsAccumulator = {
-      stats.confidence(sdev) match {
+      s.confidence(sdev) match {
         case true => stats
         case false =>
+          println(s.confidence(sdev), s.sampleSize)
           val sim = simulation.runWhile(time)(p)
           val sample = if (sim._2 == time) 1 else 0
-          aux(stats.update(sample))
+          aux(s.update(sample))
       }
     }
 

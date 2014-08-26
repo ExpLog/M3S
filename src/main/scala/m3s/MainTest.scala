@@ -80,7 +80,7 @@ object MainTest extends App {
   //  testing NaturalSelection
   val cmSpecies = new ComplexMachineSpecies(cm1, 0.05, 100, 15.0, 0.50, rpMap)
   val ga = new NaturalSelection(cmSpecies)
-  val best = ga.run(1, 1, 0.6, 0.1)
+  val best = ga.run(100, 50, 0.7, 0.1)
   println(best)
 
   val bestSim = new Simulation(best._1)

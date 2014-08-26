@@ -48,6 +48,7 @@ class NaturalSelection[A](origin: Species[A]) {
    * @return
    */
   def rank(pop: List[A]): List[RankedIndividual] =
+//    pop.par.map { case x => (x, origin.fitness(x))}.toList.sortBy(-_._2)
     pop.map { case x => (x, origin.fitness(x))}.sortBy(_._2).reverse
 
 
@@ -103,8 +104,7 @@ class NaturalSelection[A](origin: Species[A]) {
       if (loop == 0) best
       else {
         val rankedPop = rank(pop)
-        val bestIndividual = rankedPop.head
-
+        val bestIndividual = if(rankedPop.head._2 > best._2) rankedPop.head else best
         val culledPop = cull(rankedPop, cullRate)
         val newPop = breed(culledPop, popSize, mutationRate)
 

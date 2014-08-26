@@ -13,6 +13,5 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
 	"org.scalatest" % "scalatest_2.11" % "2.1.6" % "test" withJavadoc(),
 	"org.scalacheck" %% "scalacheck" % "1.11.4" % "test" withJavadoc(),
-  "com.github.scala-blitz" %% "scala-blitz" % "1.1" withJavadoc(),
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.2" withJavadoc() withSources()
 )

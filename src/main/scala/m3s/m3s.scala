@@ -1,5 +1,4 @@
 import scala.language.implicitConversions
-import scala.collection.par.Scheduler.localRandom
 
 /**
  * Framework for simulating stochastic machines.
@@ -23,7 +22,7 @@ package object m3s {
   /**
    * Random number generator.
    */
-  val rand = localRandom
+  val rand = util.Random
 
   /**
    * Implicitly converts a file containing a matrix into that [[Matrix]].
